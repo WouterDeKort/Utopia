@@ -1,0 +1,63 @@
+variables:
+  buildConfiguration: 'Release'
+
+steps:
+- checkout: self  #
+  clean: false
+
+- task: DotNetCoreInstaller@0
+  displayName: 'Use .NET Core sdk 2.1.500'
+  inputs:
+    version: 2.1.500
+
+- powershell: |
+   $installedTools = dotnet tool list --global
+   if ( ![bool]($installedTools -match "dotnet-sonarscanner"))
+   {
+        dotnet tool install --global dotnet-sonarscanner 
+   }
+   else
+   {
+        Write-Host "SonarScanner already installed. Skipping installation."
+   }
+  displayName: 'Install Sonar Scanner'
+
+- script: dotnet sonarscanner begin /k:"$(system.TeamProject)" /d:sonar.host.url="$(Sonar.Url)" /d:sonar.login="$(Sonar.Login)" /d:sonar.global.exclusions="wwwroot/lib/**"
+  displayName: 'Begin Sonar Scan'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+
+- task: DotNetCoreCLI@2
+  displayName: Build
+  inputs:
+    arguments: '--configuration $(BuildConfiguration)'
+
+- task: whitesource.ws-bolt.bolt.wss.WhiteSource Bolt@1
+  displayName: 'WhiteSource Bolt'
+  inputs:
+    cwd: src
+    advance: true
+
+- script: dotnet sonarscanner end /d:sonar.login="$(Sonar.Login)"
+  displayName: 'End Sonar Scan'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+     
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet publish'
+  inputs:
+    command: 'publish'
+    projects: 'src/Todo.Web/ToDo.Web.csproj'
+    publishWebProjects: True
+    arguments: '--configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory)'
+    zipAfterPublish: false
+
+- task: PublishTestResults@2
+  displayName: 'Publish test results'
+  inputs:
+    testRunner: VSTest
+    testResultsFiles: '**/*.trx'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish build artifact'
+  inputs:
+    PathtoPublish: '$(build.artifactstagingdirectory)'
+    ArtifactName: 'drop'

@@ -1,0 +1,118 @@
+﻿@page
+@model ToDo.Web.Pages.StatisticsModel
+@{
+    ViewData["Title"] = "Statistics";
+}
+
+<h2>Statistics</h2>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <strong>Total items</strong>
+            </div>
+            <div class="panel-body">
+                <center><h1>@Model.TotalCount</h1></center>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <strong>Total owners</strong>
+            </div>
+            <div class="panel-body">
+                <center><h1>@Model.PeopleCount</h1></center>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <strong>Average per item</strong> <small>(in hours)</small>
+            </div>
+            <div class="panel-body">
+                <center><h1>@Model.AvarageHours</h1></center>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <strong>Big tasks</strong>
+            </div>
+            <div class="panel-body">
+                <center><h1>@Model.BigTaskCount</h1></center>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <strong>Small Tasks</strong>
+            </div>
+            <div class="panel-body">
+                <center><h1>@Model.SmallTaskCount</h1></center>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <strong>Average per owner</strong> <small>(in hours)</small>
+            </div>
+            <div class="panel-body">
+                <center><h1>@Model.AvarageHoursPerPerson</h1></center>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <strong>Coming month statistics</strong> <small>(in hours)</small>
+            </div>
+            <div class="panel-body">
+                <div id="chartdiv"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+
+    @{
+        string lineCode = "";
+        foreach (var dateStatistic in Model.NextMonthStatistic.OrderBy(s => s.Date))
+        {
+            if (lineCode.Length > 1)
+            {
+                lineCode += ",";
+            }
+
+            lineCode += $"['{dateStatistic.Date.ToString("yyyy-MM-dd")} 8:00AM', {dateStatistic.Hours}]";
+        }
+    }
+
+    <!--[if lt IE 9]><script language="javascript" type="text/javascript" src="/lib/jqPlot/excanvas.min.js"></script><![endif]-->
+    <script language="javascript" type="text/javascript" src="~/lib/jqPlot/jquery.jqplot.min.js"></script>
+    <script language="javascript" type="text/javascript" src="~/lib/jqPlot/plugins/jqplot.dateAxisRenderer.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var line = [@Html.Raw(lineCode)];
+            $.jqplot('chartdiv', [line], {
+                axes: {
+                    xaxis: {
+                        renderer: $.jqplot.DateAxisRenderer
+                    }
+                },
+                series: [{ lineWidth: 4, markerOptions: { style: 'square' } }]
+            });
+
+        });
+    </script>
+}

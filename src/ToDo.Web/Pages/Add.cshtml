@@ -1,0 +1,32 @@
+﻿@page
+@model ToDo.Web.Pages.AddModel
+
+@{
+    ViewData["Title"] = "Add";
+}
+
+<h1>New ToDo Item</h1>
+<form method="post" class="form-horizontal">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="form-group">
+        <label asp-for="Item.Title" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="Item.Title" class="form-control" />
+            <span asp-validation-for="Item.Title" class="text-danger"></span>
+        </div>
+        <label asp-for="Item.Description" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="Item.Description" class="form-control" />
+            <span asp-validation-for="Item.Description" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <button type="submit" class="btn btn-primary">Add</button>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

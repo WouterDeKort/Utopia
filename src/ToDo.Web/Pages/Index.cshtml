@@ -1,0 +1,77 @@
+﻿@page
+@model ToDo.Web.Pages.ToDoRazorPage.IndexModel
+
+@if (Model.ShowMessage)
+{
+    <p>
+        <div class="alert alert-success alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            @Model.Message
+        </div>
+    </p>
+}
+
+<form method="post">
+    @foreach (var item in Model.ToDoItems)
+    {
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <strong>
+                            <a asp-page="Details" asp-route-id="@item.Id" class="item-details-title-@item.Id">@item.Title</a>
+                        </strong>
+
+                        @if (item.Hours.HasValue)
+                        {
+                            <span class="pull-right">
+                                <small>
+                                    @item.Hours hours remaining
+                                </small>
+                            </span>
+                        }
+
+                        <button type="submit" asp-page-handler="delete" asp-route-id="@item.Id" class="btn btn-xs btn-danger">delete</button>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-xs-6 col-md-10">
+                                @item.Description
+                                <hr />
+                                <strong>Due before:</strong> @item.DueDate.ToString("dd-MM-yyyy")
+                            </div>
+                            <div class="col-xs-6 col-md-2">
+                                <div class="thumbnail">
+                                    <img src="@item.Avatar" alt="@item.Owner" width="180" height="180">
+                                    <center>
+                                        <h4>@item.Owner</h4>
+                                    </center>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</form>
+
+@if (Model.NumberOfPages > 1)
+{
+    <div class="row">
+        <div class="col-md-8">
+            @for (int x = 1; x <= Model.NumberOfPages; x++)
+            {
+                if (x == Model.CurrentPage)
+                {
+                    @x.ToString()
+                }
+                else
+                {
+                    <a asp-page="Index" asp-route-pageNumber="@x">@x.ToString()</a>
+                }
+                @:&nbsp
+            }
+        </div>
+    </div>
+}

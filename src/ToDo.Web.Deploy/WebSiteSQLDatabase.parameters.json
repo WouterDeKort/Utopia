@@ -1,0 +1,24 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "webAppHostingPlanName": {
+      "value": "Utopia-Test-HostingPlan"
+    },
+    "sqlServerName": {
+      "value": "utopia-test-sqlserver"
+    },
+    "sqlServerDatabaseName": {
+      "value": "Utopia-Test-Db"
+    },
+    "webSiteName": {
+      "value": "Utopia-Test-Web"
+    },
+    "sqlServerAdministratorLogin": {
+      "value": "*****"
+    },
+    "sqlServerAdministratorLoginPassword": {
+      "value": "*********"
+    }
+  }
+}
