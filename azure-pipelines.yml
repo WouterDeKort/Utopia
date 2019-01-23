@@ -31,7 +31,7 @@ steps:
   inputs:
     arguments: '--configuration $(BuildConfiguration)'
 
-- task: whitesource.ws-bolt.bolt.wss.WhiteSource Bolt@1
+- task: whitesource.ws-bolt.bolt.wss.WhiteSource Bolt@18
   displayName: 'WhiteSource Bolt'
   inputs:
     cwd: src
