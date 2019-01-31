@@ -77,7 +77,10 @@ namespace ToDo.Web
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 
-            context.Database.Migrate();
+            if (context.Database.IsSqlServer())
+            {
+                context.Database.Migrate();
+            }
         }
 
         protected virtual void AddDatabase(IServiceCollection services)
