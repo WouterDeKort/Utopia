@@ -12,6 +12,7 @@ using System;
 using System.Reflection;
 using ToDo.Core.Interfaces;
 using ToDo.Core.SharedKernel;
+using ToDo.Infrastructure;
 using ToDo.Infrastructure.Data;
 
 namespace ToDo.Web
@@ -95,7 +96,7 @@ namespace ToDo.Web
             loggerFactory.AddDebug();
         }
 
-        public static IServiceProvider BuildDependencyInjectionProvider(IServiceCollection services)
+        public IServiceProvider BuildDependencyInjectionProvider(IServiceCollection services)
         {
             var builder = new ContainerBuilder();
 
@@ -105,7 +106,19 @@ namespace ToDo.Web
             Assembly webAssembly = Assembly.GetExecutingAssembly();
             Assembly coreAssembly = Assembly.GetAssembly(typeof(BaseEntity));
             Assembly infrastructureAssembly = Assembly.GetAssembly(typeof(EfRepository));
-            builder.RegisterAssemblyTypes(webAssembly, coreAssembly, infrastructureAssembly).AsImplementedInterfaces();
+
+            string launchDarkleyApiKey = Configuration["LaunchDarkley:ApiKey"];
+            builder.RegisterType<FeatureToggleRepository>()
+                   .As<IFeatureToggleRepository>()
+                   .WithParameter("launchDarkleyApiKey", launchDarkleyApiKey)
+                  .SingleInstance();
+
+            builder.RegisterAssemblyTypes(
+                webAssembly, 
+                coreAssembly, 
+                infrastructureAssembly)
+                .Except<FeatureToggleRepository>()
+                .AsImplementedInterfaces();
 
             IContainer applicationContainer = builder.Build();
             return new AutofacServiceProvider(applicationContainer);

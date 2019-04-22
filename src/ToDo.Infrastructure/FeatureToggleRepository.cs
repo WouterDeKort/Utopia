@@ -6,25 +6,26 @@ namespace ToDo.Infrastructure
 {
     public class FeatureToggleRepository : IFeatureToggleRepository
     {
-        private static Lazy<LdClient> client = new Lazy<LdClient>(() =>
+        private LdClient client;
+
+        public FeatureToggleRepository(string launchDarkleyApiKey)
         {
-            string key = "";// System.Configuration.ConfigurationManager.AppSettings["LaunchDarkleyKey"];
-            return new LdClient(key);
-        });
+            if (string.IsNullOrWhiteSpace(launchDarkleyApiKey)) throw new ArgumentNullException(nameof(launchDarkleyApiKey));
+
+            client = new LdClient(launchDarkleyApiKey);
+        }
 
         public bool StatisicsIsEnabled()
         {
-            //return client.Value.BoolVariation("statistics", GetUser(), false);
-            return false;
+            return client.BoolVariation("statistics", GetUser(), false);
         }
 
         private static User GetUser()
         {
-            return null;
-            //return User.WithKey("wouter@example.com")
-            //                .AndFirstName("Wouter")
-            //                .AndLastName("de Kort")
-            //                .AndCustomAttribute("groups", "beta_testers");
+            return User.WithKey("wouter@example.com")
+                            .AndFirstName("Wouter")
+                            .AndLastName("de Kort")
+                            .AndCustomAttribute("groups", "beta_testers");
         }
     }
 }
