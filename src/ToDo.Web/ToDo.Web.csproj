@@ -5,6 +5,7 @@
     <AssemblyName>ToDo.Web</AssemblyName>
     <OutputType>Exe</OutputType>
     <PackageId>ToDo.Web</PackageId>
+    <UserSecretsId>f3211dab-943d-471f-ab6a-1351941cf62d</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
