@@ -24,8 +24,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\ToDo.Core\Todo.Core.csproj" />
-    <ProjectReference Include="..\..\src\ToDo.Infrastructure\ToDo.Infrastructure.csproj" />
-    <ProjectReference Include="..\..\src\ToDo.Web\ToDo.Web.csproj" />
+    <ProjectReference Include="..\ToDo.Core\ToDo.Core.csproj" />
+    <ProjectReference Include="..\ToDo.Infrastructure\ToDo.Infrastructure.csproj" />
+    <ProjectReference Include="..\Todo.Web\Todo.Web.csproj" />
   </ItemGroup>
+
 </Project>

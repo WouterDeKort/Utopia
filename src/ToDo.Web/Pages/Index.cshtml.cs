@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ToDo.Core.Entities;
@@ -45,16 +46,18 @@ namespace ToDo.Web.Pages.ToDoRazorPage
         }
         public async Task<IActionResult> OnPostDelete(int id)
         {
-            var item = await _repository.GetByIdAsync<ToDoItem>(id);
+            throw new ArgumentException("My Test exception!");
 
-            if (item != null)
-            {
-                await _repository.DeleteAsync(item);
-            }
+            //var item = await _repository.GetByIdAsync<ToDoItem>(id);
 
-            Message = $"ToDo {id} deleted successfully";
+            //if (item != null)
+            //{
+            //    await _repository.DeleteAsync(item);
+            //}
 
-            return RedirectToPage();
+            //Message = $"ToDo {id} deleted successfully";
+
+            //return RedirectToPage();
         }
     }
 }
