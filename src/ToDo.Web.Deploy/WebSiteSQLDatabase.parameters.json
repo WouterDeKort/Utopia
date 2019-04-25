@@ -6,19 +6,22 @@
       "value": "Utopia-Test-HostingPlan"
     },
     "sqlServerName": {
-      "value": "utopia-test-sqlserver"
+      "value": "utopia-test-sqlserver-123"
     },
     "sqlServerDatabaseName": {
       "value": "Utopia-Test-Db"
     },
     "webSiteName": {
-      "value": "Utopia-Test-Web"
+      "value": "Utopia-Test-Web-123"
+    },
+    "appInsightsName": {
+      "value": "Utopia-Test-Web-AI"
     },
     "sqlServerAdministratorLogin": {
-      "value": "*****"
+      "value": "Wouter"
     },
     "sqlServerAdministratorLoginPassword": {
-      "value": "*********"
+      "value": "DeKort12#$567890"
     }
   }
 }

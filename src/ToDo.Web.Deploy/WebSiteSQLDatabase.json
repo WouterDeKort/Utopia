@@ -15,18 +15,14 @@
     "webSiteName": {
       "type": "string"
     },
+    "appInsightsName": {
+      "type": "string"
+    },
     "sqlServerAdministratorLogin": {
       "type": "string"
     },
     "sqlServerAdministratorLoginPassword": {
       "type": "securestring"
-    },
-    "location":{
-      "type": "string",
-      "defaultValue": "[resourceGroup().location]",
-      "metadata": {
-        "description": "Location for all resources."    
-      }
     }
   },
   "variables": {
@@ -39,9 +35,22 @@
   },
   "resources": [
     {
+      "type": "microsoft.insights/components",
+      "apiVersion": "2015-05-01",
+      "name": "[parameters('appInsightsName')]",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "[concat('hidden-link:', resourceGroup().id, '/providers/Microsoft.Web/sites/', parameters('webSiteName'))]": "Resource",
+        "displayName": "AppInsightsComponent"
+      },
+      "properties": {
+        "applicationId": "[parameters('appInsightsName')]"
+      }
+    },
+    {
       "name": "[parameters('sqlServerName')]",
       "type": "Microsoft.Sql/servers",
-      "location": "[parameters('location')]",
+      "location": "[resourceGroup().location]",
       "tags": {
         "displayName": "SqlServer"
       },
@@ -54,7 +63,7 @@
         {
           "name": "[parameters('sqlServerDatabaseName')]",
           "type": "databases",
-          "location": "[parameters('location')]",
+          "location": "[resourceGroup().location]",
           "tags": {
             "displayName": "Database"
           },
@@ -75,7 +84,7 @@
           "dependsOn": [
             "[resourceId('Microsoft.Sql/servers/', parameters('sqlServerName'))]"
           ],
-          "location": "[parameters('location')]",
+          "location": "[resourceGroup().location]",
           "name": "AllowAllWindowsAzureIps",
           "properties": {
             "endIpAddress": "0.0.0.0",
@@ -88,7 +97,7 @@
       "apiVersion": "2015-08-01",
       "name": "[parameters('webAppHostingPlanName')]",
       "type": "Microsoft.Web/serverfarms",
-      "location": "[parameters('location')]",
+      "location": "[resourceGroup().location]",
       "tags": {
         "displayName": "HostingPlan"
       },
@@ -104,9 +113,10 @@
       "apiVersion": "2015-08-01",
       "name": "[parameters('webSiteName')]",
       "type": "Microsoft.Web/sites",
-      "location": "[parameters('location')]",
+      "location": "[resourceGroup().location]",
       "dependsOn": [
-        "[resourceId('Microsoft.Web/serverFarms/', parameters('webAppHostingPlanName'))]"
+        "[resourceId('Microsoft.Web/serverFarms/', parameters('webAppHostingPlanName'))]",
+        "[resourceId('microsoft.insights/components/', parameters('appInsightsName'))]"
       ],
       "tags": {
         "[concat('hidden-related:', resourceGroup().id, '/providers/Microsoft.Web/serverfarms/', parameters('webAppHostingPlanName'))]": "empty",
@@ -125,6 +135,10 @@
             "[resourceId('Microsoft.Web/Sites/', parameters('webSiteName'))]"
           ],
           "properties": {
+            "APPINSIGHTS_INSTRUMENTATIONKEY": {
+              "value": "[reference(concat('microsoft.insights/components/', parameters('appInsightsName'))).InstrumentationKey]",
+              "type": "Custom"
+            },
             "Utopia": {
               "value": "[concat('Data Source=tcp:', reference(resourceId('Microsoft.Sql/servers/', parameters('sqlServerName'))).fullyQualifiedDomainName, ',1433;Initial Catalog=', parameters('sqlServerDatabaseName'), ';User Id=', parameters('sqlServerAdministratorLogin'), '@', parameters('sqlServerName'), ';Password=', parameters('sqlServerAdministratorLoginPassword'), ';')]",
               "type": "SQLServer"
