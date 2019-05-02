@@ -32,11 +32,15 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav pull-right">
                     <li><a asp-page="Add"><span class="glyphicon glyphicon-plus"></span> Add new item</a></li>
-                 
-                    @if (((bool)ViewData["StatisicsIsEnabled"]) == true)
+
+                    @*@if (((bool)ViewData["StatisicsIsEnabled"]) == true)
                     {
                         <li><a asp-page="Statistics"><span class="glyphicon glyphicon-stats"></span> Statistics</a></li>
-                    }
+                    }*@
+
+                    <li>
+                        <partial name="_LoginPartial" />
+                    </li>
                 </ul>
             </div>
         </div>
