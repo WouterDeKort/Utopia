@@ -2,23 +2,30 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using ToDo.Core.Interfaces;
 using ToDo.Infrastructure.Identity;
+using ToDo.Web.Pages;
 
 namespace ToDo.Web.Areas.Identity.Pages.Account
 {
     [AllowAnonymous]
-    public class LoginModel : PageModel
+    public class LoginModel : PageBaseModel
     {
         private readonly SignInManager<User> _signInManager;
         private readonly ILogger<LoginModel> _logger;
 
-        public LoginModel(SignInManager<User> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(
+            SignInManager<User> signInManager, 
+            ILogger<LoginModel> logger, 
+            IRepository repository,
+            IFeatureToggleRepository featureToggleRepository,
+            IApplicationMonitor applicationMonitor) :
+            base(repository, featureToggleRepository, applicationMonitor)
         {
             _signInManager = signInManager;
             _logger = logger;

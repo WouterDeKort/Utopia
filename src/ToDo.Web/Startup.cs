@@ -19,6 +19,8 @@ using ToDo.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.Http;
+using ToDo.Infrastructure.Services;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace Todo.Web
 {
@@ -39,10 +41,39 @@ namespace Todo.Web
 
             CreateIdentityIfNotCreated(services);
 
+            services.Configure<IdentityOptions>(options =>
+            {
+                // Password settings.
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequiredLength = 6;
+                options.Password.RequiredUniqueChars = 1;
+
+                // Lockout settings.
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.AllowedForNewUsers = true;
+
+                // User settings.
+                options.User.AllowedUserNameCharacters =
+                "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+                options.User.RequireUniqueEmail = true;
+            });
+
+            string sendGridApiKey = Configuration["SendGrid:ApiKey"];
+            services.AddTransient<IEmailSender>(o => new EmailSender(sendGridApiKey));
+
             services.AddMvc()
                 .AddControllersAsServices()
                 .AddSessionStateTempDataProvider()
+                .AddRazorPagesOptions(options =>
+                {
+                    options.Conventions.AuthorizePage("/Add");
+                })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
             services.AddSession();
 
             services.AddSwaggerGen(c =>
@@ -78,6 +109,7 @@ namespace Todo.Web
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
+
             services.ConfigureApplicationCookie(options =>
             {
                 options.Cookie.HttpOnly = true;
@@ -140,8 +172,6 @@ namespace Todo.Web
             {
                 context.Database.Migrate();
             }
-
-
         }
 
         protected virtual void AddDatabase(IServiceCollection services)
@@ -176,6 +206,12 @@ namespace Todo.Web
                    .WithParameter("launchDarkleyApiKey", launchDarkleyApiKey)
                   .SingleInstance();
 
+            //string sendGridApiKey = Configuration["SendGrid:ApiKey"];
+            //builder.RegisterType<EmailSender>()
+            //       .As<IEmailSender>()
+            //       .WithParameter("apiKey", sendGridApiKey)
+            //      .SingleInstance();
+
             string applicationInsightsApiKey = Configuration["ApplicationInsights:InstrumentationKey"];
             builder.RegisterType<ApplicationMonitor>()
                    .As<IApplicationMonitor>()
@@ -188,6 +224,7 @@ namespace Todo.Web
                 infrastructureAssembly)
                 .Except<FeatureToggleRepository>()
                 .Except<ApplicationMonitor>()
+                .Except<EmailSender>()
                 .AsImplementedInterfaces();
 
             IContainer applicationContainer = builder.Build();

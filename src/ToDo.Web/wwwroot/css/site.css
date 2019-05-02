@@ -54,3 +54,7 @@ textarea {
 .item-details-title {
     color: inherit;
 }
+
+.overide-button-bootstrap:focus {
+    text-decoration:none;
+}
