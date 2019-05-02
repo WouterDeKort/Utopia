@@ -13,12 +13,6 @@ namespace ToDo.Web.Areas.Identity
         {
             builder.ConfigureServices((context, services) =>
             {
-                services.AddDbContext<IdentityDbContext>(options =>
-                    options.UseSqlServer(
-                        context.Configuration.GetConnectionString("IdentityDbContextConnection")));
-
-                services.AddDefaultIdentity<User>()
-                    .AddEntityFrameworkStores<IdentityDbContext>();
             });
         }
     }

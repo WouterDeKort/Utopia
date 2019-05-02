@@ -1,25 +1,24 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Swagger;
+using System;
+using System.Linq;
+using System.Reflection;
 using ToDo.Core.Interfaces;
 using ToDo.Core.SharedKernel;
 using ToDo.Infrastructure;
 using ToDo.Infrastructure.Data;
-using static Microsoft.AspNetCore.Hosting.Internal.HostingApplication;
+using ToDo.Infrastructure.Identity;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI;
+using Microsoft.AspNetCore.Http;
 
 namespace Todo.Web
 {
@@ -36,6 +35,10 @@ namespace Todo.Web
         {
             AddDatabase(services);
 
+            ConfigureCookieSettings(services);
+
+            CreateIdentityIfNotCreated(services);
+
             services.AddMvc()
                 .AddControllersAsServices()
                 .AddSessionStateTempDataProvider()
@@ -50,6 +53,44 @@ namespace Todo.Web
             return BuildDependencyInjectionProvider(services);
         }
 
+        private static void CreateIdentityIfNotCreated(IServiceCollection services)
+        {
+            var sp = services.BuildServiceProvider();
+            using (var scope = sp.CreateScope())
+            {
+                var existingUserManager = scope.ServiceProvider
+                    .GetService<UserManager<User>>();
+                if (existingUserManager == null)
+                {
+                    services.AddIdentity<User, IdentityRole>()
+                        .AddDefaultUI(UIFramework.Bootstrap4)
+                        .AddEntityFrameworkStores<IdentityDbContext>()
+                                        .AddDefaultTokenProviders();
+                }
+            }
+        }
+
+        private static void ConfigureCookieSettings(IServiceCollection services)
+        {
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+                options.CheckConsentNeeded = context => true;
+                options.MinimumSameSitePolicy = SameSiteMode.None;
+            });
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.Cookie.HttpOnly = true;
+                options.ExpireTimeSpan = TimeSpan.FromHours(1);
+                options.LoginPath = "/Account/Login";
+                options.LogoutPath = "/Account/Signout";
+                options.Cookie = new CookieBuilder
+                {
+                    IsEssential = true
+                };
+            });
+        }
+
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, AppDbContext context)
         {
@@ -58,6 +99,7 @@ namespace Todo.Web
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseDatabaseErrorPage();
             }
             else
             {
@@ -68,6 +110,10 @@ namespace Todo.Web
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.UseCookiePolicy();
+
+            app.UseAuthentication();
+
             app.UseSession();
 
             app.UseSwagger();
@@ -81,9 +127,14 @@ namespace Todo.Web
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
+                    name: "identity",
+                    template: "Identity/{controller=Account}/{action=Register}/{id?}");
+
+
+                routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
-});
+            });
 
             if (context.Database.IsSqlServer())
             {
@@ -97,6 +148,9 @@ namespace Todo.Web
         {
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("Utopia")));
+
+            services.AddDbContext<IdentityDbContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("IdentityConnection")));
         }
 
         protected virtual void AddLogging(ILoggerFactory loggerFactory)
