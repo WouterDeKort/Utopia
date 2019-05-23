@@ -1,6 +1,7 @@
 ﻿using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.ApplicationInsights.Extensibility;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,9 +13,9 @@ namespace ToDo.Infrastructure
     {
         private TelemetryClient client;
 
-        public ApplicationMonitor(TelemetryClient client)
+        public ApplicationMonitor(string apiKey)
         {
-            this.client = client;
+            this.client = new TelemetryClient(new TelemetryConfiguration(apiKey));
         }
 
         public void TrackEvent(string eventName, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null)

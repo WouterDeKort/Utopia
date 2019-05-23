@@ -36,8 +36,6 @@ namespace ToDo.Tests.Integration.Web
                     options.UseInternalServiceProvider(serviceProvider);
                 });
 
-                services.AddTransient<IDomainEventDispatcher, NoOpDomainEventDispatcher>();
-
                 // Build the service provider.
                 var sp = services.BuildServiceProvider();
 

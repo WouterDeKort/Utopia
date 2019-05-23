@@ -113,9 +113,8 @@ namespace ToDo.Tests.Integration.Data
         private EfRepository GetRepository()
         {
             var options = CreateNewContextOptions();
-            var mockDispatcher = new Mock<IDomainEventDispatcher>();
 
-            _dbContext = new AppDbContext(options, mockDispatcher.Object);
+            _dbContext = new AppDbContext(options);
             return new EfRepository(_dbContext);
         }
     }

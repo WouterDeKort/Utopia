@@ -12,8 +12,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using ToDo.Infrastructure.Identity;
-using ToDo.Web.Pages;
-using ToDo.Core.Interfaces;
 
 namespace ToDo.Web.Areas.Identity.Pages.Account
 {

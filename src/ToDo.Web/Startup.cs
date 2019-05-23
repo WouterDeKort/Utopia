@@ -1,7 +1,9 @@
-using Autofac;
-using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -16,11 +18,7 @@ using ToDo.Core.SharedKernel;
 using ToDo.Infrastructure;
 using ToDo.Infrastructure.Data;
 using ToDo.Infrastructure.Identity;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
-using Microsoft.AspNetCore.Http;
 using ToDo.Infrastructure.Services;
-using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace Todo.Web
 {
@@ -33,8 +31,17 @@ namespace Todo.Web
 
         public IConfiguration Configuration { get; }
 
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
+            string launchDarkleyApiKey = Configuration["LaunchDarkley:ApiKey"];
+            string applicationInsightsApiKey = Configuration["ApplicationInsights:InstrumentationKey"];
+            string sendGridApiKey = Configuration["SendGrid:ApiKey"];
+
+            services.AddScoped<IFeatureToggleRepository>(s => new FeatureToggleRepository(launchDarkleyApiKey));
+            services.AddScoped<IApplicationMonitor>(s => new ApplicationMonitor(applicationInsightsApiKey));
+            services.AddScoped<IRepository, EfRepository>();
+            services.AddTransient<IEmailSender>(o => new EmailSender(sendGridApiKey));
+            
             AddDatabase(services);
 
             ConfigureCookieSettings(services);
@@ -62,9 +69,6 @@ namespace Todo.Web
                 options.User.RequireUniqueEmail = true;
             });
 
-            string sendGridApiKey = Configuration["SendGrid:ApiKey"];
-            services.AddTransient<IEmailSender>(o => new EmailSender(sendGridApiKey));
-
             services.AddMvc()
                 .AddControllersAsServices()
                 .AddSessionStateTempDataProvider()
@@ -80,8 +84,6 @@ namespace Todo.Web
             {
                 c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
             });
-
-            return BuildDependencyInjectionProvider(services);
         }
 
         private static void CreateIdentityIfNotCreated(IServiceCollection services)
@@ -187,48 +189,6 @@ namespace Todo.Web
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
-        }
-
-        public IServiceProvider BuildDependencyInjectionProvider(IServiceCollection services)
-        {
-            var builder = new ContainerBuilder();
-
-            // Populate the container using the service collection
-            builder.Populate(services);
-
-            Assembly webAssembly = Assembly.GetExecutingAssembly();
-            Assembly coreAssembly = Assembly.GetAssembly(typeof(BaseEntity));
-            Assembly infrastructureAssembly = Assembly.GetAssembly(typeof(EfRepository));
-
-            string launchDarkleyApiKey = Configuration["LaunchDarkley:ApiKey"];
-            builder.RegisterType<FeatureToggleRepository>()
-                   .As<IFeatureToggleRepository>()
-                   .WithParameter("launchDarkleyApiKey", launchDarkleyApiKey)
-                  .SingleInstance();
-
-            //string sendGridApiKey = Configuration["SendGrid:ApiKey"];
-            //builder.RegisterType<EmailSender>()
-            //       .As<IEmailSender>()
-            //       .WithParameter("apiKey", sendGridApiKey)
-            //      .SingleInstance();
-
-            string applicationInsightsApiKey = Configuration["ApplicationInsights:InstrumentationKey"];
-            builder.RegisterType<ApplicationMonitor>()
-                   .As<IApplicationMonitor>()
-                   .WithParameter("key", applicationInsightsApiKey)
-                  .SingleInstance();
-
-            builder.RegisterAssemblyTypes(
-                webAssembly,
-                coreAssembly,
-                infrastructureAssembly)
-                .Except<FeatureToggleRepository>()
-                .Except<ApplicationMonitor>()
-                .Except<EmailSender>()
-                .AsImplementedInterfaces();
-
-            IContainer applicationContainer = builder.Build();
-            return new AutofacServiceProvider(applicationContainer);
         }
     }
 }

@@ -24,4 +24,8 @@
     <ProjectReference Include="..\ToDo.Core\ToDo.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DomainEvents\" />
+  </ItemGroup>
+
 </Project>

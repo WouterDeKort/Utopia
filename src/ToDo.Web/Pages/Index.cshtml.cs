@@ -45,19 +45,17 @@ namespace ToDo.Web.Pages.ToDoRazorPage
             CurrentPage = pageNumber;
         }
         public async Task<IActionResult> OnPostDelete(int id)
-        {
-            throw new ArgumentException("My Test exception!");
+        {            
+            var item = await _repository.GetByIdAsync<ToDoItem>(id);
 
-            //var item = await _repository.GetByIdAsync<ToDoItem>(id);
+            if (item != null)
+            {
+                await _repository.DeleteAsync(item);
+            }
 
-            //if (item != null)
-            //{
-            //    await _repository.DeleteAsync(item);
-            //}
+            Message = $"ToDo {id} deleted successfully";
 
-            //Message = $"ToDo {id} deleted successfully";
-
-            //return RedirectToPage();
+            return RedirectToPage();
         }
     }
 }
