@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System;
+using Todo.Core.Queries;
 
 namespace ToDo.Infrastructure.Data
 {
@@ -27,14 +28,28 @@ namespace ToDo.Infrastructure.Data
             return _dbContext.Set<T>().ToListAsync();
         }
         public async Task<(int NumberOfPages, List<T> Items)> PageAsync<T>(int page, int pageSize) where T : BaseEntity
-        {            
-            int numberOfPages = await _dbContext.ToDoItems.CountAsync() / pageSize;
-            var result = await _dbContext.Set<T>().Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
-
-            return (numberOfPages, result);
+        {
+			return await PageAsync<T>(null, page, pageSize);
         }
 
-        public async Task<T> AddAsync<T>(T entity) where T : BaseEntity
+		public async Task<(int NumberOfPages, List<T> Items)> PageAsync<T>(QueryBase<T> query, int page, int pageSize) where T : BaseEntity
+		{
+			var set = _dbContext.Set<T>().AsQueryable();
+
+			if (query != null) set = query.Call(set);
+
+			int numberOfPages = await set.CountAsync() / pageSize;
+			var result = await set.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+
+			return (numberOfPages, result);
+		}
+		
+		public Task<List<T>> ListAsync<T>(QueryBase<T> query) where T : BaseEntity
+		{
+			return query.Call(_dbContext.Set<T>()).ToListAsync();
+		}
+
+		public async Task<T> AddAsync<T>(T entity) where T : BaseEntity
         {
             _dbContext.Set<T>().Add(entity);
             await _dbContext.SaveChangesAsync();
@@ -53,5 +68,6 @@ namespace ToDo.Infrastructure.Data
             _dbContext.Entry(entity).State = EntityState.Modified;
             return _dbContext.SaveChangesAsync();
         }
-    }
+
+	}
 }

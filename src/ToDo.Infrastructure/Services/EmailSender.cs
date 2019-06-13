@@ -7,7 +7,6 @@ namespace ToDo.Infrastructure.Services
 {
     public class EmailSender : IEmailSender
     {
-        private AuthMessageSenderOptions options;
         private string apiKey;
 
         public EmailSender(string apiKey)

@@ -20,7 +20,6 @@ namespace ToDo.Web.Areas.Identity.Pages.Account
     public class ExternalLoginModel : PageBaseModel
     {
         private readonly SignInManager<User> _signInManager;
-        private readonly UserManager<User> _userManager;
         private readonly ILogger<ExternalLoginModel> _logger;
 
         public ExternalLoginModel(
@@ -30,10 +29,9 @@ namespace ToDo.Web.Areas.Identity.Pages.Account
             IRepository repository,
             IFeatureToggleRepository featureToggleRepository,
             IApplicationMonitor applicationMonitor) :
-            base(repository, featureToggleRepository, applicationMonitor)
+            base(userManager, repository, featureToggleRepository, applicationMonitor)
         {
             _signInManager = signInManager;
-            _userManager = userManager;
             _logger = logger;
         }
 

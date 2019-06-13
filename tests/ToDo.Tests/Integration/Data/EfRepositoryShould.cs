@@ -18,7 +18,7 @@ namespace ToDo.Tests.Integration.Data
         [Fact]
         public async Task AddItemAndSetId()
         {
-            var repository = GetRepository();
+            var repository = RepositoryHelper.GetRepository();
             var item = new ToDoItemBuilder().Build();
 
             await repository.AddAsync(item);
@@ -32,11 +32,11 @@ namespace ToDo.Tests.Integration.Data
         [Fact]
         public async Task PageItems()
         {
-            var repository = GetRepository();
+			var repository = RepositoryHelper.GetRepository();
 
-            for (int x = 0; x < 100; x++)
+			for (int x = 0; x < 100; x++)
             {
-                await repository.AddAsync(new ToDoItemBuilder().Title(x.ToString()).Build());
+                await repository.AddAsync(new ToDoItemBuilder().WithTitle(x.ToString()).Build());
             }
 
             var result = await repository.PageAsync<ToDoItem>(1, 10);
@@ -48,10 +48,10 @@ namespace ToDo.Tests.Integration.Data
         [Fact]
         public async Task UpdateItemAfterAddingIt()
         {
-            // add an item
-            var repository = GetRepository();
-            var initialTitle = Guid.NewGuid().ToString();
-            var item = new ToDoItemBuilder().Title(initialTitle).Build();
+			// add an item
+			var repository = RepositoryHelper.GetRepository();
+			var initialTitle = Guid.NewGuid().ToString();
+            var item = new ToDoItemBuilder().WithTitle(initialTitle).Build();
 
             await repository.AddAsync(item);
 
@@ -79,10 +79,10 @@ namespace ToDo.Tests.Integration.Data
         [Fact]
         public async Task DeleteItemAfterAddingIt()
         {
-            // add an item
-            var repository = GetRepository();
-            var initialTitle = Guid.NewGuid().ToString();
-            var item = new ToDoItemBuilder().Title(initialTitle).Build();
+			// add an item
+			var repository = RepositoryHelper.GetRepository();
+			var initialTitle = Guid.NewGuid().ToString();
+            var item = new ToDoItemBuilder().WithTitle(initialTitle).Build();
             await repository.AddAsync(item);
 
             // delete the item
@@ -91,31 +91,6 @@ namespace ToDo.Tests.Integration.Data
             // verify it's no longer there
             Assert.DoesNotContain(await repository.ListAsync<ToDoItem>(),
                 i => i.Title == initialTitle);
-        }
-
-        private static DbContextOptions<AppDbContext> CreateNewContextOptions()
-        {
-            // Create a fresh service provider, and therefore a fresh
-            // InMemory database instance.
-            var serviceProvider = new ServiceCollection()
-                .AddEntityFrameworkInMemoryDatabase()
-                .BuildServiceProvider();
-
-            // Create a new options instance telling the context to use an
-            // InMemory database and the new service provider.
-            var builder = new DbContextOptionsBuilder<AppDbContext>();
-            builder.UseInMemoryDatabase("ToDo")
-                   .UseInternalServiceProvider(serviceProvider);
-
-            return builder.Options;
-        }
-
-        private EfRepository GetRepository()
-        {
-            var options = CreateNewContextOptions();
-
-            _dbContext = new AppDbContext(options);
-            return new EfRepository(_dbContext);
         }
     }
 }

@@ -24,12 +24,14 @@ namespace Todo.Web
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
+			Environment = env;
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
+		public IHostingEnvironment Environment { get; }
+		public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -40,8 +42,15 @@ namespace Todo.Web
             services.AddScoped<IFeatureToggleRepository>(s => new FeatureToggleRepository(launchDarkleyApiKey));
             services.AddScoped<IApplicationMonitor>(s => new ApplicationMonitor(applicationInsightsApiKey));
             services.AddScoped<IRepository, EfRepository>();
-            services.AddTransient<IEmailSender>(o => new EmailSender(sendGridApiKey));
-            
+
+			if (Environment.IsDevelopment())
+			{
+				services.AddTransient<IEmailSender>(o => new DummyEmailSender());
+			}
+			else
+			{
+				services.AddTransient<IEmailSender>(o => new EmailSender(sendGridApiKey));
+			}
             AddDatabase(services);
 
             ConfigureCookieSettings(services);
@@ -126,11 +135,11 @@ namespace Todo.Web
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, AppDbContext context)
+        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory, AppDbContext context)
         {
             AddLogging(loggerFactory);
 
-            if (env.IsDevelopment())
+            if (Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
@@ -185,7 +194,8 @@ namespace Todo.Web
                 options.UseSqlServer(Configuration.GetConnectionString("IdentityConnection")));
         }
 
-        protected virtual void AddLogging(ILoggerFactory loggerFactory)
+		[Obsolete]
+		protected virtual void AddLogging(ILoggerFactory loggerFactory)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();

@@ -1,21 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using ToDo.Web.Pages;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using ToDo.Core.Interfaces;
+using ToDo.Infrastructure.Identity;
+using ToDo.Web.Pages;
 
 namespace ToDo.Web.Areas.Identity.Pages.Account
 {
-    [AllowAnonymous]
+	[AllowAnonymous]
     public class ResetPasswordConfirmationModel : PageBaseModel
     {
-        public ResetPasswordConfirmationModel(IRepository repository,
+        public ResetPasswordConfirmationModel(
+			UserManager<User> userManager,
+			IRepository repository,
             IFeatureToggleRepository featureToggleRepository,
             IApplicationMonitor applicationMonitor) :
-            base(repository, featureToggleRepository, applicationMonitor)
+            base(userManager, repository, featureToggleRepository, applicationMonitor)
         { }
 
         public void OnGet()

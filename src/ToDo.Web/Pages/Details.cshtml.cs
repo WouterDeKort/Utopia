@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using ToDo.Infrastructure.Identity;
 
 namespace ToDo.Web.Pages.ToDoRazorPage
 {
@@ -12,10 +14,11 @@ namespace ToDo.Web.Pages.ToDoRazorPage
         public ToDoItem ToDoItem { get; set; }
 
         public DetailsModel(
-            IRepository repository,
+			UserManager<User> userManager,
+			IRepository repository,
             IFeatureToggleRepository featureToggleRepository,
             IApplicationMonitor applicationMonitor)
-            : base(repository, featureToggleRepository, applicationMonitor)
+            : base(userManager, repository, featureToggleRepository, applicationMonitor)
         {
         }
 

@@ -20,12 +20,14 @@ namespace ToDo.Web.Areas.Identity.Pages.Account
         private readonly SignInManager<User> _signInManager;
         private readonly ILogger<LoginWith2faModel> _logger;
 
-        public LoginWith2faModel(SignInManager<User> signInManager,
+        public LoginWith2faModel(
+			UserManager<User> userManager,
+			SignInManager<User> signInManager,
             ILogger<LoginWith2faModel> logger,
             IRepository repository,
             IFeatureToggleRepository featureToggleRepository,
             IApplicationMonitor applicationMonitor) :
-            base(repository, featureToggleRepository, applicationMonitor)
+            base(userManager, repository, featureToggleRepository, applicationMonitor)
         {
             _signInManager = signInManager;
             _logger = logger;

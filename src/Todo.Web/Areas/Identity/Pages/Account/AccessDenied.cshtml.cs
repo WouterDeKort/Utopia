@@ -5,15 +5,19 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using ToDo.Web.Pages;
 using ToDo.Core.Interfaces;
+using Microsoft.AspNetCore.Identity;
+using ToDo.Infrastructure.Identity;
 
 namespace ToDo.Web.Areas.Identity.Pages.Account
 {
     public class AccessDeniedModel : PageBaseModel
     {
-        public AccessDeniedModel(IRepository repository,
+        public AccessDeniedModel(
+			UserManager<User> userManager,
+			IRepository repository,
             IFeatureToggleRepository featureToggleRepository,
             IApplicationMonitor applicationMonitor) :
-            base(repository, featureToggleRepository, applicationMonitor)
+            base(userManager, repository, featureToggleRepository, applicationMonitor)
         { }
 
         public void OnGet()

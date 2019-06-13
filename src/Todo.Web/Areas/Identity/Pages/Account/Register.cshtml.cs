@@ -15,95 +15,97 @@ using ToDo.Infrastructure.Identity;
 
 namespace ToDo.Web.Areas.Identity.Pages.Account
 {
-    [AllowAnonymous]
-    public class RegisterModel : PageBaseModel
-    {
-        private readonly SignInManager<User> _signInManager;
-        private readonly UserManager<User> _userManager;
-        private readonly ILogger<RegisterModel> _logger;
-        private readonly IEmailSender _emailSender;
+	[AllowAnonymous]
+	public class RegisterModel : PageBaseModel
+	{
+		private readonly SignInManager<User> _signInManager;
+		private readonly ILogger<RegisterModel> _logger;
+		private readonly IEmailSender _emailSender;
 
-        public RegisterModel(
-            UserManager<User> userManager,
-            SignInManager<User> signInManager,
-            ILogger<RegisterModel> logger,
-            IEmailSender emailSender, 
-            IRepository repository,
-            IFeatureToggleRepository featureToggleRepository,
-            IApplicationMonitor applicationMonitor) :
-            base(repository, featureToggleRepository, applicationMonitor)
-        {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _logger = logger;
-            _emailSender = emailSender;
-        }
+		public RegisterModel(
+			UserManager<User> userManager,
+			SignInManager<User> signInManager,
+			ILogger<RegisterModel> logger,
+			IEmailSender emailSender,
+			IRepository repository,
+			IFeatureToggleRepository featureToggleRepository,
+			IApplicationMonitor applicationMonitor) :
+			base(userManager, repository, featureToggleRepository, applicationMonitor)
+		{
+			_signInManager = signInManager;
+			_logger = logger;
+			_emailSender = emailSender;
+		}
 
-        [BindProperty]
-        public InputModel Input { get; set; }
+		[BindProperty]
+		public InputModel Input { get; set; }
 
-        public string ReturnUrl { get; set; }
+		public string ReturnUrl { get; set; }
 
-        public class InputModel
-        {
-            [Required]
-            [Display(Name = "UserName")]
-            public string UserName { get; set; }
+		public class InputModel
+		{
+			[Required]
+			[Display(Name = "UserName")]
+			public string UserName { get; set; }
 
-            [Required]
-            [EmailAddress]
-            [Display(Name = "Email")]
-            public string Email { get; set; }
+			[Required]
+			[Display(Name = "Name")]
+			public string Name { get; set; }
 
-            [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
-            [DataType(DataType.Password)]
-            [Display(Name = "Password")]
-            public string Password { get; set; }
+			[Required]
+			[EmailAddress]
+			[Display(Name = "Email")]
+			public string Email { get; set; }
 
-            [DataType(DataType.Password)]
-            [Display(Name = "Confirm password")]
-            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
-            public string ConfirmPassword { get; set; }
-        }
+			[Required]
+			[StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+			[DataType(DataType.Password)]
+			[Display(Name = "Password")]
+			public string Password { get; set; }
 
-        public void OnGet(string returnUrl = null)
-        {
-            ReturnUrl = returnUrl;
-        }
+			[DataType(DataType.Password)]
+			[Display(Name = "Confirm password")]
+			[Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+			public string ConfirmPassword { get; set; }
+		}
 
-        public async Task<IActionResult> OnPostAsync(string returnUrl = null)
-        {
-            returnUrl = returnUrl ?? Url.Content("~/");
-            if (ModelState.IsValid)
-            {
-                var user = new User { UserName = Input.UserName, Email = Input.Email };
-                var result = await _userManager.CreateAsync(user, Input.Password);
-                if (result.Succeeded)
-                {
-                    _logger.LogInformation("User created a new account with password.");
+		public void OnGet(string returnUrl = null)
+		{
+			ReturnUrl = returnUrl;
+		}
 
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    var callbackUrl = Url.Page(
-                        "/Account/ConfirmEmail",
-                        pageHandler: null,
-                        values: new { userId = user.Id, code = code },
-                        protocol: Request.Scheme);
+		public async Task<IActionResult> OnPostAsync(string returnUrl = null)
+		{
+			returnUrl = returnUrl ?? Url.Content("~/");
+			if (ModelState.IsValid)
+			{
+				var user = new User { Name = Input.Name, UserName = Input.UserName, Email = Input.Email };
+				var result = await _userManager.CreateAsync(user, Input.Password);
+				if (result.Succeeded)
+				{
+					_logger.LogInformation("User created a new account with password.");
 
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+					var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+					var callbackUrl = Url.Page(
+						"/Account/ConfirmEmail",
+						pageHandler: null,
+						values: new { userId = user.Id, code = code },
+						protocol: Request.Scheme);
 
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    return LocalRedirect(returnUrl);
-                }
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
-            }
+					await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
+						$"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
-            // If we got this far, something failed, redisplay form
-            return Page();
-        }
-    }
+					await _signInManager.SignInAsync(user, isPersistent: false);
+					return LocalRedirect(returnUrl);
+				}
+				foreach (var error in result.Errors)
+				{
+					ModelState.AddModelError(string.Empty, error.Description);
+				}
+			}
+
+			// If we got this far, something failed, redisplay form
+			return Page();
+		}
+	}
 }

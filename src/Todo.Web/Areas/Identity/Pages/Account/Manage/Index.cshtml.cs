@@ -29,8 +29,9 @@ namespace ToDo.Web.Areas.Identity.Pages.Account.Manage
         }
 
         public string Username { get; set; }
+		public string Name { get; set; }
 
-        public bool IsEmailConfirmed { get; set; }
+		public bool IsEmailConfirmed { get; set; }
 
         [TempData]
         public string StatusMessage { get; set; }

@@ -1,5 +1,8 @@
-﻿using ToDo.Core.Interfaces;
+﻿using Microsoft.AspNetCore.Identity;
+using System.Threading.Tasks;
+using ToDo.Core.Interfaces;
 using ToDo.Infrastructure.Data;
+using ToDo.Infrastructure.Identity;
 
 namespace ToDo.Web.Pages.ToDoRazorPage
 {
@@ -8,20 +11,21 @@ namespace ToDo.Web.Pages.ToDoRazorPage
         private readonly AppDbContext _context;
 
         public PopulateModel(
+			UserManager<User> userManager,
             IRepository repository,
             IFeatureToggleRepository featureToggleRepository,
             IApplicationMonitor applicationMonitor,
             AppDbContext context)
-            : base(repository, featureToggleRepository, applicationMonitor)
+            : base(userManager, repository, featureToggleRepository, applicationMonitor)
         {
             _context = context;
         }
 
         public int RecordsAdded { get; set; }
 
-        public void OnGet()
+        public async Task OnGet()
         {
-            RecordsAdded = SeedData.PopulateTestData(_context);
+            RecordsAdded = await SeedData.PopulateTestDataAsync(_context, _userManager);
         }
     }
 }

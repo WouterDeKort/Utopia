@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,6 +9,7 @@ using System.IO;
 using Todo.Web;
 using ToDo.Core.Interfaces;
 using ToDo.Infrastructure.Data;
+using ToDo.Infrastructure.Identity;
 using ToDo.Web;
 
 namespace ToDo.Tests.Integration.Web
@@ -36,8 +38,14 @@ namespace ToDo.Tests.Integration.Web
                     options.UseInternalServiceProvider(serviceProvider);
                 });
 
-                // Build the service provider.
-                var sp = services.BuildServiceProvider();
+				services.AddDbContext<IdentityDbContext>(options =>
+				{
+					options.UseInMemoryDatabase("InMemoryDbForTesting");
+					options.UseInternalServiceProvider(serviceProvider);
+				});
+
+				// Build the service provider.
+				var sp = services.BuildServiceProvider();
 
                 // Create a scope to obtain a reference to the database
                 // context (ApplicationDbContext).
@@ -48,13 +56,15 @@ namespace ToDo.Tests.Integration.Web
                     var logger = scopedServices
                         .GetRequiredService<ILogger<CustomWebApplicationFactory<TStartup>>>();
 
+					var userManager = scopedServices.GetRequiredService<UserManager<User>>();
+
                     // Ensure the database is created.
                     db.Database.EnsureCreated();
 
                     try
                     {
-                        // Seed the database with test data.
-                        SeedData.PopulateTestData(db);
+						// Seed the database with test data.
+						_ = SeedData.PopulateTestDataAsync(db, userManager).Result;
                     }
                     catch (Exception ex)
                     {

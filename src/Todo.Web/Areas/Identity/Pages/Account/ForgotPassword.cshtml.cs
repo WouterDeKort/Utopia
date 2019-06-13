@@ -14,7 +14,6 @@ namespace ToDo.Web.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class ForgotPasswordModel : PageBaseModel
     {
-        private readonly UserManager<User> _userManager;
         private readonly IEmailSender _emailSender;
 
         public ForgotPasswordModel(
@@ -23,9 +22,8 @@ namespace ToDo.Web.Areas.Identity.Pages.Account
             IRepository repository,
             IFeatureToggleRepository featureToggleRepository,
             IApplicationMonitor applicationMonitor) :
-            base(repository, featureToggleRepository, applicationMonitor)
+            base(userManager, repository, featureToggleRepository, applicationMonitor)
         {
-            _userManager = userManager;
             _emailSender = emailSender;
         }
 

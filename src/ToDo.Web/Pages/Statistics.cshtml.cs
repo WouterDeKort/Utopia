@@ -1,64 +1,67 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ToDo.Core.Entities;
 using ToDo.Core.Interfaces;
+using ToDo.Infrastructure.Identity;
 
 namespace ToDo.Web.Pages
 {
-    public class StatisticsModel : PageBaseModel
-    {
-        public int TotalCount { get; set; }
+	public class StatisticsModel : PageBaseModel
+	{
+		public int TotalCount { get; set; }
 
-        public int PeopleCount { get; set; }
+		public int PeopleCount { get; set; }
 
-        public int BigTaskCount { get; set; }
+		public int BigTaskCount { get; set; }
 
-        public int SmallTaskCount { get; set; }
+		public int SmallTaskCount { get; set; }
 
-        public long AvarageHours { get; set; }
+		public long AvarageHours { get; set; }
 
-        public long AvarageHoursPerPerson { get; set; }
+		public long AvarageHoursPerPerson { get; set; }
 
-        public List<DateStatic> NextMonthStatistic { get; set; }
-        
-        public StatisticsModel(
-            IRepository repository,
-            IFeatureToggleRepository featureToggleRepository,
-            IApplicationMonitor applicationMonitor)
-            : base(repository, featureToggleRepository, applicationMonitor)
-        {
-        }
+		public List<DateStatic> NextMonthStatistic { get; set; }
 
-        public async Task<IActionResult> OnGetAsync()
-        {
-            if (!_featureToggleRepository.StatisicsIsEnabled())
-            {
-                return NotFound();
-            }
+		public StatisticsModel(
+			UserManager<User> userManager,
+			IRepository repository,
+			IFeatureToggleRepository featureToggleRepository,
+			IApplicationMonitor applicationMonitor)
+			: base(userManager, repository, featureToggleRepository, applicationMonitor)
+		{
+		}
 
-            var items = await _repository.ListAsync<ToDoItem>();
-            var nextMonthEndDate = DateTime.Now.AddMonths(1);
+		public async Task<IActionResult> OnGetAsync()
+		{
+			if (!_featureToggleRepository.StatisicsIsEnabled())
+			{
+				return NotFound();
+			}
 
-            TotalCount = items.Count;
-            PeopleCount = items.Select(i => i.Owner).Distinct().Count();
-            BigTaskCount = items.Count(i => i.Hours > 100);
-            SmallTaskCount = items.Count(i => i.Hours < 25);
-            AvarageHours = items.Sum(i => i.Hours.Value) / items.Count;
-            AvarageHoursPerPerson = items.Sum(i => i.Hours.Value) / items.Select(i => i.Owner).Distinct().Count();
-            NextMonthStatistic = items.Where(i => i.DueDate > DateTime.Now && i.DueDate < nextMonthEndDate)
-                                      .Select(i => new DateStatic { Date = i.DueDate, Hours = i.Hours.Value }).ToList();
+			var items = await _repository.ListAsync<ToDoItem>();
+			var nextMonthEndDate = DateTime.Now.AddMonths(1);
 
-            return Page();
-        }
-    }
+			TotalCount = items.Count;
+			PeopleCount = items.Select(i => i.Owner).Distinct().Count();
+			BigTaskCount = items.Count(i => i.Hours > 100);
+			SmallTaskCount = items.Count(i => i.Hours < 25);
+			AvarageHours = items.Sum(i => i.Hours.Value) / items.Count;
+			AvarageHoursPerPerson = items.Sum(i => i.Hours.Value) / items.Select(i => i.Owner).Distinct().Count();
+			NextMonthStatistic = items.Where(i => i.DueDate > DateTime.Now && i.DueDate < nextMonthEndDate)
+									  .Select(i => new DateStatic { Date = i.DueDate, Hours = i.Hours.Value }).ToList();
 
-    public class DateStatic
-    {
-        public DateTime Date { get; set; }
+			return Page();
+		}
+	}
 
-        public long Hours { get; set; }
-    }
+	public class DateStatic
+	{
+		public DateTime Date { get; set; }
+
+		public long Hours { get; set; }
+	}
 }

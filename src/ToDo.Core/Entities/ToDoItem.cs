@@ -19,6 +19,8 @@ namespace ToDo.Core.Entities
         public DateTime DueDate { get; set; }
         public bool IsDone { get; private set; }
 
+		public string OwnerId { get; set; }
+
         public void MarkComplete()
         {
             IsDone = true;
