@@ -18,7 +18,7 @@
 //            var connectionString = "Server = (localdb)\\MSSQLLocalDB; Initial Catalog = ToDo; Trusted_Connection = True; MultipleActiveResultSets = true"; // configuration.GetConnectionString("Utopia");
 
 //            var builder = new DbContextOptionsBuilder<AppDbContext>();
-            
+
 //            builder.UseSqlServer(connectionString, options=> options.MigrationsAssembly("ToDo.Infrastructure"));
 //            return new AppDbContext(builder.Options, null);
 //        }

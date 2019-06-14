@@ -1,4 +1,6 @@
-﻿@inject SignInManager<User> SignInManager
+﻿@using ToDo.Core.Entities
+
+@inject SignInManager<User> SignInManager
 @{
     var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
 }

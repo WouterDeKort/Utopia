@@ -1,30 +1,30 @@
-﻿using ToDo.Core.Events;
-using System.Linq;
+﻿using System.Linq;
+using ToDo.Core.Events;
 using Xunit;
 
 namespace ToDo.Tests.Core.Entities
 {
-    public class ToDoItemMarkCompleteShould
-    {
-        [Fact]
-        public void SetIsDoneToTrue()
-        {
-            var item = new ToDoItemBuilder().Build();
+	public class ToDoItemMarkCompleteShould
+	{
+		[Fact]
+		public void SetIsDoneToTrue()
+		{
+			var item = new ToDoItemBuilder().Build();
 
-            item.MarkComplete();
+			item.MarkComplete();
 
-            Assert.True(item.IsDone);
-        }
+			Assert.True(item.IsDone);
+		}
 
-        [Fact]
-        public void RaiseToDoItemCompletedEvent()
-        {
-            var item = new ToDoItemBuilder().Build();
+		[Fact]
+		public void RaiseToDoItemCompletedEvent()
+		{
+			var item = new ToDoItemBuilder().Build();
 
-            item.MarkComplete();
+			item.MarkComplete();
 
-            Assert.Single(item.Events);
-            Assert.IsType<ToDoItemCompletedEvent>(item.Events.First());
-        }
-    }
+			Assert.Single(item.Events);
+			Assert.IsType<ToDoItemCompletedEvent>(item.Events.First());
+		}
+	}
 }

@@ -4,28 +4,38 @@ using ToDo.Core.Interfaces;
 
 namespace ToDo.Infrastructure
 {
-    public class FeatureToggleRepository : IFeatureToggleRepository
-    {
-        private LdClient client;
+	public class FeatureToggleRepository : IFeatureToggleRepository
+	{
+		private LdClient client;
 
-        public FeatureToggleRepository(string launchDarkleyApiKey)
-        {
-            if (string.IsNullOrWhiteSpace(launchDarkleyApiKey)) throw new ArgumentNullException(nameof(launchDarkleyApiKey));
+		public FeatureToggleRepository(string launchDarkleyApiKey)
+		{
+			if (string.IsNullOrWhiteSpace(launchDarkleyApiKey)) throw new ArgumentNullException(nameof(launchDarkleyApiKey));
 
-            client = new LdClient(launchDarkleyApiKey);
-        }
+			client = new LdClient(launchDarkleyApiKey);
+		}
 
-        public bool StatisicsIsEnabled()
-        {
-            return client.BoolVariation("statistics", GetUser(), false);
-        }
+		private static LaunchDarkly.Client.User GetUser(Core.Entities.User user)
+		{
+			if (user == null)
+			{
+				return LaunchDarkly.Client.User.WithKey("anonymous").AndAnonymous(true);
+			}
+			else
+			{
+				var firstName = user.Name.Substring(0, user.Name.IndexOf(" "));
+				var lastName = user.Name.Substring(user.Name.IndexOf(" "));
 
-        private static User GetUser()
-        {
-            return User.WithKey("wouter@example.com")
-                            .AndFirstName("Wouter")
-                            .AndLastName("de Kort")
-                            .AndCustomAttribute("groups", "beta_testers");
-        }
-    }
+				return LaunchDarkly.Client.User.WithKey(user.Email)
+								.AndFirstName(firstName)
+								.AndLastName(lastName);
+
+			}
+		}
+
+		public bool StatisicsIsEnabled(Core.Entities.User user)
+		{
+			return client.BoolVariation("statistics", GetUser(user), false);
+		}
+	}
 }

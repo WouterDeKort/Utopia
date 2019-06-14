@@ -1,24 +1,28 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ToDo.Core.Entities;
 using ToDo.Core.Interfaces;
-using ToDo.Infrastructure.Identity;
 
 namespace ToDo.Web.Pages
 {
 
-	public class AddModel : PageBaseModel
+	public class AddModel : PageModel
 	{
+		private UserManager<User> _userManager;
+		private IRepository _repository;
+		private IApplicationMonitor _applicationMonitor;
 
 		public AddModel(
 			UserManager<User> userManager,
 			IRepository repository,
-			IFeatureToggleRepository featureToggleRepository,
 			IApplicationMonitor applicationMonitor)
-			: base(userManager, repository, featureToggleRepository, applicationMonitor)
 		{
+			_userManager = userManager;
+			_repository = repository;
+			_applicationMonitor = applicationMonitor;
 		}
 
 		[BindProperty]

@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Todo.Core.Queries;
-using ToDo.Core.Entities;
 using Xunit;
 
 namespace ToDo.Tests.Integration.Data.Queries
@@ -27,7 +23,7 @@ namespace ToDo.Tests.Integration.Data.Queries
 
 			Assert.Equal(3, itemsOwnedByWouter.Count);
 			Assert.All(itemsOwnedByWouter, i => Assert.Equal("wouterdekort", i.OwnerId));
-			
+
 		}
 	}
 }

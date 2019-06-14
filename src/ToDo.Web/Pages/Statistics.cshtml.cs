@@ -1,17 +1,21 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ToDo.Core.Entities;
 using ToDo.Core.Interfaces;
-using ToDo.Infrastructure.Identity;
 
 namespace ToDo.Web.Pages
 {
-	public class StatisticsModel : PageBaseModel
+	public class StatisticsModel : PageModel
 	{
+		private readonly UserManager<User> userManager;
+		private readonly IRepository repository;
+		private readonly IFeatureToggleRepository featureToggleRepository;
+
 		public int TotalCount { get; set; }
 
 		public int PeopleCount { get; set; }
@@ -29,20 +33,23 @@ namespace ToDo.Web.Pages
 		public StatisticsModel(
 			UserManager<User> userManager,
 			IRepository repository,
-			IFeatureToggleRepository featureToggleRepository,
-			IApplicationMonitor applicationMonitor)
-			: base(userManager, repository, featureToggleRepository, applicationMonitor)
+			IFeatureToggleRepository featureToggleRepository)
 		{
+			this.userManager = userManager;
+			this.repository = repository;
+			this.featureToggleRepository = featureToggleRepository;
 		}
 
 		public async Task<IActionResult> OnGetAsync()
 		{
-			if (!_featureToggleRepository.StatisicsIsEnabled())
+			var user = await userManager.GetUserAsync(User);
+
+			if (!featureToggleRepository.StatisicsIsEnabled(user))
 			{
 				return NotFound();
 			}
 
-			var items = await _repository.ListAsync<ToDoItem>();
+			var items = await repository.ListAsync<ToDoItem>();
 			var nextMonthEndDate = DateTime.Now.AddMonths(1);
 
 			TotalCount = items.Count;

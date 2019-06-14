@@ -1,20 +1,21 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
-using System;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Todo.Core.Queries;
 using ToDo.Core.Entities;
 using ToDo.Core.Interfaces;
-using ToDo.Infrastructure.Identity;
-using System.Linq;
-using Microsoft.AspNetCore.Authorization;
-using Todo.Core.Queries;
 
 namespace ToDo.Web.Pages.ToDoRazorPage
 {
-	public class IndexModel : PageBaseModel
+	public class IndexModel : PageModel
 	{
+		private UserManager<User> _userManager;
+		private IRepository _repository;
+		private IFeatureToggleRepository _featureToggleRepository;
+		private IApplicationMonitor _applicationMonitor;
+
 		public List<ToDoItem> ToDoItems { get; set; }
 		public int NumberOfPages { get; set; }
 		public int CurrentPage { get; set; }
@@ -28,15 +29,12 @@ namespace ToDo.Web.Pages.ToDoRazorPage
 			UserManager<User> userManager,
 			IRepository repository,
 			IFeatureToggleRepository featureToggleRepository,
-			IApplicationMonitor applicationMonitor) :
-			base(userManager, repository, featureToggleRepository, applicationMonitor)
+			IApplicationMonitor applicationMonitor)
 		{
-		}
-
-		public override void OnPageHandlerExecuting(PageHandlerExecutingContext context)
-		{
-			ViewData["StatisicsIsEnabled"] = _featureToggleRepository.StatisicsIsEnabled();
-			base.OnPageHandlerExecuting(context);
+			_userManager = userManager;
+			_repository = repository;
+			_featureToggleRepository = featureToggleRepository;
+			_applicationMonitor = applicationMonitor;
 		}
 
 		public async Task OnGetAsync(int pageNumber = 1)

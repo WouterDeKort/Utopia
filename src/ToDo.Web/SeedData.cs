@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using ToDo.Core.Entities;
 using ToDo.Infrastructure.Data;
-using ToDo.Infrastructure.Identity;
 
 namespace ToDo.Web
 {
