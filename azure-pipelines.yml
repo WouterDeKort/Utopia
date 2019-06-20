@@ -8,7 +8,7 @@ steps:
 - checkout: self  #
   clean: false
 
-  - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
+- task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
     displayName: 'Restore artifact based on: **/*.csproj, salt.txt'
     inputs:
       keyfile: $(keyfile)
