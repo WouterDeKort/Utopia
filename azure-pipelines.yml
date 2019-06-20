@@ -1,14 +1,38 @@
 variables:
   buildConfiguration: 'Release'
+  NUGET_PACKAGES: $(Build.SourcesDirectory)/packages
+  keyfile: '**/*.csproj, salt.txt'
+  azureDevOpsArtifactsFeed: 'c013416d-862f-4a53-b537-3724f44e435c'
 
 steps:
 - checkout: self  #
   clean: false
 
+  - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
+    displayName: 'Restore artifact based on: **/*.csproj, salt.txt'
+    inputs:
+      keyfile: $(keyfile)
+      targetfolder: $(NUGET_PACKAGES)
+      vstsFeed: $(azureDevOpsArtifactsFeed)
+
 - task: DotNetCoreInstaller@0
   displayName: 'Use .NET Core sdk 2.1.500'
   inputs:
     version: 2.1.500
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet restore'
+  inputs:
+    command: restore
+    projects: '**/*.csproj'
+  condition: ne(variables['CacheRestored'], 'true')
+
+- task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
+  displayName: 'Save artifact based on: **/*.csproj, salt.txt'
+  inputs:
+    keyfile: $(keyfile)
+    targetfolder: $(NUGET_PACKAGES)
+    vstsFeed: $(azureDevOpsArtifactsFeed)
 
 - powershell: |
    $installedTools = dotnet tool list --global
