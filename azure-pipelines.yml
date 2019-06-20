@@ -50,7 +50,7 @@ steps:
 - task: DotNetCoreCLI@2
   displayName: Build
   inputs:
-    arguments: '--configuration $(BuildConfiguration)'
+    arguments: '--configuration $(BuildConfiguration) --no-restore'
 
 - task: whitesource.ws-bolt.bolt.wss.WhiteSource Bolt@18
   displayName: 'WhiteSource Bolt'
