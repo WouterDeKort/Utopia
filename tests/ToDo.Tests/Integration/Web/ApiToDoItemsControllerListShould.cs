@@ -10,11 +10,11 @@ using Xunit;
 namespace ToDo.Tests.Integration.Web
 {
 
-	public class ApiToDoItemsControllerList : IClassFixture<CustomWebApplicationFactory<Startup>>
+	public class ApiToDoItemsControllerList : IClassFixture<CustomWebApplicationFactory>
 	{
 		private readonly HttpClient _client;
 
-		public ApiToDoItemsControllerList(CustomWebApplicationFactory<Startup> factory)
+		public ApiToDoItemsControllerList(CustomWebApplicationFactory factory)
 		{
 			_client = factory.CreateClient();
 		}

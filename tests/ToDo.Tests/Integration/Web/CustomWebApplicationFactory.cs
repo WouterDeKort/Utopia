@@ -1,7 +1,5 @@
-﻿using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
@@ -12,12 +10,11 @@ using System.IO;
 using Todo.Web;
 using ToDo.Core.Entities;
 using ToDo.Infrastructure.Data;
-using ToDo.Infrastructure.Identity;
 using ToDo.Web;
 
 namespace ToDo.Tests.Integration.Web
 {
-	public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<Startup>
+	public class CustomWebApplicationFactory : WebApplicationFactory<Startup>
 	{
 		protected override void ConfigureWebHost(IWebHostBuilder builder)
 		{
@@ -33,7 +30,7 @@ namespace ToDo.Tests.Integration.Web
 			});
 		}
 
-		private static void AddTestData(IServiceCollection services)
+		private void AddTestData(IServiceCollection services)
 		{
 			var sp = services.BuildServiceProvider();
 
@@ -43,7 +40,7 @@ namespace ToDo.Tests.Integration.Web
 				var db = scopedServices.GetRequiredService<AppDbContext>();
 				var identityDb = scopedServices.GetRequiredService<Infrastructure.Identity.IdentityDbContext>();
 				var logger = scopedServices
-					.GetRequiredService<ILogger<CustomWebApplicationFactory<TStartup>>>();
+					.GetRequiredService<ILogger<CustomWebApplicationFactory>>();
 
 				var userManager = scopedServices.GetRequiredService<UserManager<User>>();
 

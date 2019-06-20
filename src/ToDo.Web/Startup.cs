@@ -18,6 +18,7 @@ using ToDo.Infrastructure.Data;
 using ToDo.Infrastructure.Identity;
 using ToDo.Infrastructure.Services;
 using ToDo.Web.Filters;
+using ToDo.Web.Middleware;
 
 namespace Todo.Web
 {
@@ -146,12 +147,13 @@ namespace Todo.Web
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-		public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory, AppDbContext context)
+		public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory, AppDbContext appDbContext, IdentityDbContext identityDbContext)
 		{
 			AddLogging(loggerFactory);
 
 			if (Environment.IsDevelopment())
-			{
+			{				
+				app.UseMiddleware<AuthenticatedTestRequestMiddleware>();
 				app.UseDeveloperExceptionPage();
 				app.UseDatabaseErrorPage();
 			}
@@ -178,24 +180,32 @@ namespace Todo.Web
 				c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
 			});
 
+
+			
+
+
 			app.UseMvc(routes =>
+				{
+					routes.MapRoute(
+						name: "identity",
+						template: "Identity/{controller=Account}/{action=Register}/{id?}");
+
+
+					routes.MapRoute(
+						name: "default",
+						template: "{controller=Home}/{action=Index}/{id?}");
+				});
+
+			if (appDbContext.Database.IsSqlServer())
 			{
-				routes.MapRoute(
-					name: "identity",
-					template: "Identity/{controller=Account}/{action=Register}/{id?}");
+				appDbContext.Database.Migrate();
+			}
 
-
-				routes.MapRoute(
-					name: "default",
-					template: "{controller=Home}/{action=Index}/{id?}");
-			});
-
-			if (context.Database.IsSqlServer())
+			if (identityDbContext.Database.IsSqlServer())
 			{
-				context.Database.Migrate();
+				identityDbContext.Database.Migrate();
 			}
 		}
-
 		protected virtual void AddDatabase(IServiceCollection services)
 		{
 			services.AddDbContext<AppDbContext>(options =>

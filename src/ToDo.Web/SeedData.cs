@@ -35,12 +35,7 @@ namespace ToDo.Web
 						Email = person.email,
 					};
 
-					var result = await userManager.CreateAsync(user, "MySecretPassword1@");
-
-					if (!result.Succeeded)
-					{
-						var s = " bla";
-					}
+					_ = await userManager.CreateAsync(user, "MySecretPassword1@");
 				}
 
 				var item = new ToDoItem
