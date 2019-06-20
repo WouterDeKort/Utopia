@@ -1,5 +1,8 @@
 variables:
   buildConfiguration: 'Release'
+  NUGET_PACKAGES: $(Build.SourcesDirectory)/packages
+  keyfile: '**/*.csproj, salt.txt'
+  azureDevOpsArtifactsFeed: 'c013416d-862f-4a53-b537-3724f44e435c'
 
 steps:
 - checkout: self  #
@@ -9,6 +12,13 @@ steps:
   displayName: 'Use .NET Core sdk 2.1.500'
   inputs:
     version: 2.1.500
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet restore'
+  inputs:
+    command: restore
+    projects: '**/*.csproj'
+  condition: ne(variables['CacheRestored'], 'true')
 
 - powershell: |
    $installedTools = dotnet tool list --global
@@ -56,8 +66,8 @@ steps:
     testRunner: VSTest
     testResultsFiles: '**/*.trx'
 
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish build artifact'
+- task: PublishPipelineArtifact@1
+  displayName: 'Publish Pipeline Artifact'
   inputs:
-    PathtoPublish: '$(build.artifactstagingdirectory)'
-    ArtifactName: 'drop'
+    targetPath: '$(build.artifactstagingdirectory)'
+    artifact: drop
