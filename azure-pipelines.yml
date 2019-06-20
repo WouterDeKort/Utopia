@@ -84,4 +84,4 @@ steps:
   displayName: 'Publish piline artifact'
   inputs:
     targetPath: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'drop'
+    artifact: 'drop'
