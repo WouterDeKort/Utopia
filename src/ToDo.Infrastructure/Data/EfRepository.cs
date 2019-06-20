@@ -10,21 +10,21 @@ namespace ToDo.Infrastructure.Data
 {
 	public class EfRepository : IRepository
 	{
-		private readonly AppDbContext _dbContext;
+		public AppDbContext DbContext { get; private set; }
 
 		public EfRepository(AppDbContext dbContext)
 		{
-			_dbContext = dbContext;
+			DbContext = dbContext;
 		}
 
 		public Task<T> GetByIdAsync<T>(int id) where T : BaseEntity
 		{
-			return _dbContext.Set<T>().SingleOrDefaultAsync(e => e.Id == id);
+			return DbContext.Set<T>().SingleOrDefaultAsync(e => e.Id == id);
 		}
 
 		public Task<List<T>> ListAsync<T>() where T : BaseEntity
 		{
-			return _dbContext.Set<T>().ToListAsync();
+			return DbContext.Set<T>().ToListAsync();
 		}
 		public async Task<(int NumberOfPages, List<T> Items)> PageAsync<T>(int page, int pageSize) where T : BaseEntity
 		{
@@ -33,7 +33,7 @@ namespace ToDo.Infrastructure.Data
 
 		public async Task<(int NumberOfPages, List<T> Items)> PageAsync<T>(QueryBase<T> query, int page, int pageSize) where T : BaseEntity
 		{
-			var set = _dbContext.Set<T>().AsQueryable();
+			var set = DbContext.Set<T>().AsQueryable();
 
 			if (query != null) set = query.Call(set);
 
@@ -45,27 +45,27 @@ namespace ToDo.Infrastructure.Data
 
 		public Task<List<T>> ListAsync<T>(QueryBase<T> query) where T : BaseEntity
 		{
-			return query.Call(_dbContext.Set<T>()).ToListAsync();
+			return query.Call(DbContext.Set<T>()).ToListAsync();
 		}
 
 		public async Task<T> AddAsync<T>(T entity) where T : BaseEntity
 		{
-			_dbContext.Set<T>().Add(entity);
-			await _dbContext.SaveChangesAsync();
+			DbContext.Set<T>().Add(entity);
+			await DbContext.SaveChangesAsync();
 
 			return entity;
 		}
 
 		public Task DeleteAsync<T>(T entity) where T : BaseEntity
 		{
-			_dbContext.Set<T>().Remove(entity);
-			return _dbContext.SaveChangesAsync();
+			DbContext.Set<T>().Remove(entity);
+			return DbContext.SaveChangesAsync();
 		}
 
 		public Task UpdateAsync<T>(T entity) where T : BaseEntity
 		{
-			_dbContext.Entry(entity).State = EntityState.Modified;
-			return _dbContext.SaveChangesAsync();
+			DbContext.Entry(entity).State = EntityState.Modified;
+			return DbContext.SaveChangesAsync();
 		}
 
 	}
