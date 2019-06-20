@@ -81,7 +81,7 @@ steps:
     testResultsFiles: '**/*.trx'
 
 - task: PublishPipelineArtifact@1
-  displayName: 'Publish piline artifact'
+  displayName: 'Publish Pipeline Artifact'
   inputs:
-    targetPath: '$(Build.ArtifactStagingDirectory)'
-    artifact: 'drop'
+    targetPath: '$(build.artifactstagingdirectory)'
+    artifact: drop
