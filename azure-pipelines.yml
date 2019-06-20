@@ -80,7 +80,7 @@ steps:
     testRunner: VSTest
     testResultsFiles: '**/*.trx'
 
-- task: PublishBuildArtifacts@1
+- task: PublishPipelineArtifact@1
   displayName: 'Publish build artifact'
   inputs:
     PathtoPublish: '$(build.artifactstagingdirectory)'
