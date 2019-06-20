@@ -8,17 +8,17 @@ steps:
 - checkout: self  #
   clean: false
 
-  - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
+- task: DotNetCoreInstaller@0
+  displayName: 'Use .NET Core sdk 2.1.500'
+  inputs:
+    version: 2.1.500
+
+- task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
     displayName: 'Restore artifact based on: **/*.csproj, salt.txt'
     inputs:
       keyfile: $(keyfile)
       targetfolder: $(NUGET_PACKAGES)
       vstsFeed: $(azureDevOpsArtifactsFeed)
-
-- task: DotNetCoreInstaller@0
-  displayName: 'Use .NET Core sdk 2.1.500'
-  inputs:
-    version: 2.1.500
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet restore'
