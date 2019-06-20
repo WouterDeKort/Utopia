@@ -1,0 +1,94 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>@ViewData["Title"] - ToDo!</title>
+
+	<environment names="Development">
+		<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+		<link rel="stylesheet" href="~/css/site.css" />
+	</environment>
+	<environment names="Staging,Production">
+		<link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
+			  asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
+			  asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
+		<link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
+	</environment>
+	@Html.Raw(snippet.FullScript)
+</head>
+<body>
+	<div class="navbar navbar-inverse navbar-fixed-top">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a asp-page="/Index" class="navbar-brand"><span>Todo</span></a>
+			</div>
+			<div class="navbar-collapse collapse">
+				<ul class="nav navbar-nav pull-right">
+					<li><a asp-authorize asp-page="Add"><span class="glyphicon glyphicon-plus"></span> Add new item</a></li>
+
+					@if (((bool)ViewData["StatisicsIsEnabled"]) == true)
+					{
+						<li><a asp-authorize asp-page="Statistics"><span class="glyphicon glyphicon-stats"></span> Statistics</a></li>
+					}
+
+					<li>
+						<partial name="_LoginPartial" />
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<div class="container body-content">
+		<h4>Change your account settings</h4>
+		<hr />
+		<div class="row">
+			<div class="col-md-3">
+				<partial name="_ManageNav" />
+			</div>
+			<div class="col-md-9">
+				@RenderBody()
+			</div>
+		</div>
+		<hr />
+		<footer>
+			<p>&copy; @DateTime.Now.ToShortDateString() - ToDo!</p>
+		</footer>
+	</div>
+
+	<environment names="Development">
+		<script src="~/lib/jquery/dist/jquery.js"></script>
+		<script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+		<script src="~/js/site.js" asp-append-version="true"></script>
+	</environment>
+	<environment names="Staging,Production">
+		<script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.2.1.min.js"
+				asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+				asp-fallback-test="window.jQuery">
+		</script>
+		<script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js"
+				asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
+				asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal">
+		</script>
+		<script src="~/js/site.min.js" asp-append-version="true"></script>
+		<script type="text/javascript">
+			var appInsights = window.appInsights || function (config) {
+				function r(config) { t[config] = function () { var i = arguments; t.queue.push(function () { t[config].apply(t, i) }) } } var t = { config: config }, u = document, e = window, o = "script", s = u.createElement(o), i, f; s.src = config.url || "https://az416426.vo.msecnd.net/scripts/a/ai.0.js"; u.getElementsByTagName(o)[0].parentNode.appendChild(s); try { t.cookie = u.cookie } catch (h) { } for (t.queue = [], i = ["Event", "Exception", "Metric", "PageView", "Trace", "Dependency"]; i.length;) r("track" + i.pop()); return r("setAuthenticatedUserContext"), r("clearAuthenticatedUserContext"), config.disableExceptionTracking || (i = "onerror", r("_" + i), f = e[i], e[i] = function (config, r, u, e, o) { var s = f && f(config, r, u, e, o); return s !== !0 && t["_" + i](config, r, u, e, o), s }), t
+			}({
+				instrumentationKey: "602fa0ef-5aa7-4fc0-a9ca-fc34c2b2b2b2"
+			});
+
+			window.appInsights = appInsights;
+			appInsights.trackPageView();
+		</script>
+	</environment>
+
+	@await RenderSectionAsync("scripts", required: false).ConfigureAwait(false)
+</body>
+</html>

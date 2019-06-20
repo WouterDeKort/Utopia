@@ -1,63 +1,80 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
-using System;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Todo.Core.Queries;
 using ToDo.Core.Entities;
 using ToDo.Core.Interfaces;
 
 namespace ToDo.Web.Pages.ToDoRazorPage
 {
-    public class IndexModel : PageBaseModel
-    {
-        public List<ToDoItem> ToDoItems { get; set; }
-        public int NumberOfPages { get; set; }
-        public int CurrentPage { get; set; }
+	public class IndexModel : PageModel
+	{
+		private UserManager<User> _userManager;
+		private IRepository _repository;
+		private IFeatureToggleRepository _featureToggleRepository;
+		private IApplicationMonitor _applicationMonitor;
 
-        [TempData]
-        public string Message { get; set; }
+		public List<ToDoItem> ToDoItems { get; set; }
+		public int NumberOfPages { get; set; }
+		public int CurrentPage { get; set; }
 
-        public bool ShowMessage => !string.IsNullOrEmpty(Message);
+		[TempData]
+		public string Message { get; set; }
 
-        public IndexModel(
-            IRepository repository,
-            IFeatureToggleRepository featureToggleRepository,
-            IApplicationMonitor applicationMonitor) :
-            base(repository, featureToggleRepository, applicationMonitor)
-        {
-        }
+		public bool ShowMessage => !string.IsNullOrEmpty(Message);
 
-        public override void OnPageHandlerExecuting(PageHandlerExecutingContext context)
-        {
-            ViewData["StatisicsIsEnabled"] = _featureToggleRepository.StatisicsIsEnabled();
-            base.OnPageHandlerExecuting(context);
-        }
+		public IndexModel(
+			UserManager<User> userManager,
+			IRepository repository,
+			IFeatureToggleRepository featureToggleRepository,
+			IApplicationMonitor applicationMonitor)
+		{
+			_userManager = userManager;
+			_repository = repository;
+			_featureToggleRepository = featureToggleRepository;
+			_applicationMonitor = applicationMonitor;
+		}
 
-        public async Task OnGetAsync(int pageNumber = 1)
-        {
-            _applicationMonitor.TrackEvent("Overview page loaded",
-               new Dictionary<string, string> { { "page", pageNumber.ToString() } });
+		public async Task OnGetAsync(int pageNumber = 1)
+		{
+			if (User.Identity.IsAuthenticated)
+			{
+				_applicationMonitor.TrackEvent("Overview page loaded",
+				   new Dictionary<string, string> { { "page", pageNumber.ToString() } });
 
-            var result = await _repository.PageAsync<ToDoItem>(pageNumber, 10);
+				var user = await _userManager.GetUserAsync(User);
 
-            ToDoItems = result.Items;
-            NumberOfPages = result.NumberOfPages;
-            CurrentPage = pageNumber;
-        }
-        public async Task<IActionResult> OnPostDelete(int id)
-        {
-            throw new ArgumentException("My Test exception!");
+				var query = new ToDoItemsByOwnerQuery(user.Id);
+				var result = await _repository.PageAsync<ToDoItem>(query, pageNumber, 10);
 
-            //var item = await _repository.GetByIdAsync<ToDoItem>(id);
+				ToDoItems = result.Items;
+				NumberOfPages = result.NumberOfPages;
+				CurrentPage = pageNumber;
+			}
+			else
+			{
+				ToDoItems = new List<ToDoItem>();
+				NumberOfPages = 0;
+				CurrentPage = 1;
+			}
+		}
 
-            //if (item != null)
-            //{
-            //    await _repository.DeleteAsync(item);
-            //}
+		public async Task<IActionResult> OnPostDelete(int id)
+		{
+			if (!User.Identity.IsAuthenticated) return Challenge();
 
-            //Message = $"ToDo {id} deleted successfully";
+			var item = await _repository.GetByIdAsync<ToDoItem>(id);
 
-            //return RedirectToPage();
-        }
-    }
+			if (item != null)
+			{
+				await _repository.DeleteAsync(item);
+			}
+
+			Message = $"ToDo {id} deleted successfully";
+
+			return RedirectToPage();
+		}
+	}
 }

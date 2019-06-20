@@ -1,30 +1,33 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
-  "parameters": {
-    "webAppHostingPlanName": {
-      "type": "string",
-      "minLength": 1
-    },
-    "sqlServerName": {
-      "type": "string"
-    },
-    "sqlServerDatabaseName": {
-      "type": "string"
-    },
-    "webSiteName": {
-      "type": "string"
-    },
-    "appInsightsName": {
-      "type": "string"
-    },
-    "sqlServerAdministratorLogin": {
-      "type": "string"
-    },
-    "sqlServerAdministratorLoginPassword": {
-      "type": "securestring"
-    }
-  },
+	"parameters": {
+		"webAppHostingPlanName": {
+			"type": "string",
+			"minLength": 1
+		},
+		"sqlServerName": {
+			"type": "string"
+		},
+		"sqlServerAppDatabaseName": {
+			"type": "string"
+		},
+		"sqlServerIdentityDatabaseName": {
+			"type": "string"
+		},
+		"webSiteName": {
+			"type": "string"
+		},
+		"appInsightsName": {
+			"type": "string"
+		},
+		"sqlServerAdministratorLogin": {
+			"type": "string"
+		},
+		"sqlServerAdministratorLoginPassword": {
+			"type": "securestring"
+		}
+	},
   "variables": {
     "databaseCollation": "SQL_Latin1_General_CP1_CI_AS",
     "databaseEdition": "Basic",
@@ -59,39 +62,57 @@
         "administratorLogin": "[parameters('sqlServerAdministratorLogin')]",
         "administratorLoginPassword": "[parameters('sqlServerAdministratorLoginPassword')]"
       },
-      "resources": [
-        {
-          "name": "[parameters('sqlServerDatabaseName')]",
-          "type": "databases",
-          "location": "[resourceGroup().location]",
-          "tags": {
-            "displayName": "Database"
-          },
-          "apiVersion": "2014-04-01-preview",
-          "dependsOn": [
-            "[resourceId('Microsoft.Sql/servers/', parameters('sqlServerName'))]"
-          ],
-          "properties": {
-            "edition": "[variables('databaseEdition')]",
-            "collation": "[variables('databaseCollation')]",
-            "maxSizeBytes": "[variables('databaseMaxSizeBytes')]",
-            "requestedServiceObjectiveName": "[variables('databaseRequestedServiceObjectiveName')]"
-          }
-        },
-        {
-          "type": "firewallrules",
-          "apiVersion": "2014-04-01-preview",
-          "dependsOn": [
-            "[resourceId('Microsoft.Sql/servers/', parameters('sqlServerName'))]"
-          ],
-          "location": "[resourceGroup().location]",
-          "name": "AllowAllWindowsAzureIps",
-          "properties": {
-            "endIpAddress": "0.0.0.0",
-            "startIpAddress": "0.0.0.0"
-          }
-        }
-      ]
+			"resources": [
+				{
+					"name": "[parameters('sqlServerAppDatabaseName')]",
+					"type": "databases",
+					"location": "[resourceGroup().location]",
+					"tags": {
+						"displayName": "Database"
+					},
+					"apiVersion": "2014-04-01-preview",
+					"dependsOn": [
+						"[resourceId('Microsoft.Sql/servers/', parameters('sqlServerName'))]"
+					],
+					"properties": {
+						"edition": "[variables('databaseEdition')]",
+						"collation": "[variables('databaseCollation')]",
+						"maxSizeBytes": "[variables('databaseMaxSizeBytes')]",
+						"requestedServiceObjectiveName": "[variables('databaseRequestedServiceObjectiveName')]"
+					}
+				},
+				{
+					"name": "[parameters('sqlServerIdentityDatabaseName')]",
+					"type": "databases",
+					"location": "[resourceGroup().location]",
+					"tags": {
+						"displayName": "Database"
+					},
+					"apiVersion": "2014-04-01-preview",
+					"dependsOn": [
+						"[resourceId('Microsoft.Sql/servers/', parameters('sqlServerName'))]"
+					],
+					"properties": {
+						"edition": "[variables('databaseEdition')]",
+						"collation": "[variables('databaseCollation')]",
+						"maxSizeBytes": "[variables('databaseMaxSizeBytes')]",
+						"requestedServiceObjectiveName": "[variables('databaseRequestedServiceObjectiveName')]"
+					}
+				},
+				{
+					"type": "firewallrules",
+					"apiVersion": "2014-04-01-preview",
+					"dependsOn": [
+						"[resourceId('Microsoft.Sql/servers/', parameters('sqlServerName'))]"
+					],
+					"location": "[resourceGroup().location]",
+					"name": "AllowAllWindowsAzureIps",
+					"properties": {
+						"endIpAddress": "0.0.0.0",
+						"startIpAddress": "0.0.0.0"
+					}
+				}
+			]
     },
     {
       "apiVersion": "2015-08-01",
@@ -134,16 +155,20 @@
           "dependsOn": [
             "[resourceId('Microsoft.Web/Sites/', parameters('webSiteName'))]"
           ],
-          "properties": {
-            "APPINSIGHTS_INSTRUMENTATIONKEY": {
-              "value": "[reference(concat('microsoft.insights/components/', parameters('appInsightsName'))).InstrumentationKey]",
-              "type": "Custom"
-            },
-            "Utopia": {
-              "value": "[concat('Data Source=tcp:', reference(resourceId('Microsoft.Sql/servers/', parameters('sqlServerName'))).fullyQualifiedDomainName, ',1433;Initial Catalog=', parameters('sqlServerDatabaseName'), ';User Id=', parameters('sqlServerAdministratorLogin'), '@', parameters('sqlServerName'), ';Password=', parameters('sqlServerAdministratorLoginPassword'), ';')]",
-              "type": "SQLServer"
-            }
-          }
+					"properties": {
+						"APPINSIGHTS_INSTRUMENTATIONKEY": {
+							"value": "[reference(concat('microsoft.insights/components/', parameters('appInsightsName'))).InstrumentationKey]",
+							"type": "Custom"
+						},
+						"Utopia": {
+							"value": "[concat('Data Source=tcp:', reference(resourceId('Microsoft.Sql/servers/', parameters('sqlServerName'))).fullyQualifiedDomainName, ',1433;Initial Catalog=', parameters('sqlServerAppDatabaseName'), ';User Id=', parameters('sqlServerAdministratorLogin'), '@', parameters('sqlServerName'), ';Password=', parameters('sqlServerAdministratorLoginPassword'), ';')]",
+							"type": "SQLServer"
+						},
+						"IdentityConnection": {
+							"value": "[concat('Data Source=tcp:', reference(resourceId('Microsoft.Sql/servers/', parameters('sqlServerName'))).fullyQualifiedDomainName, ',1433;Initial Catalog=', parameters('sqlServerIdentityDatabaseName'), ';User Id=', parameters('sqlServerAdministratorLogin'), '@', parameters('sqlServerName'), ';Password=', parameters('sqlServerAdministratorLoginPassword'), ';')]",
+							"type": "SQLServer"
+						}
+					}
         }
       ]
     }

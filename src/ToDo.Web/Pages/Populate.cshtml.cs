@@ -1,27 +1,29 @@
-﻿using ToDo.Core.Interfaces;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Threading.Tasks;
+using ToDo.Core.Entities;
 using ToDo.Infrastructure.Data;
 
 namespace ToDo.Web.Pages.ToDoRazorPage
 {
-    public class PopulateModel : PageBaseModel
-    {
-        private readonly AppDbContext _context;
+	public class PopulateModel : PageModel
+	{
+		private readonly UserManager<User> userManager;
+		private readonly AppDbContext context;
 
-        public PopulateModel(
-            IRepository repository,
-            IFeatureToggleRepository featureToggleRepository,
-            IApplicationMonitor applicationMonitor,
-            AppDbContext context)
-            : base(repository, featureToggleRepository, applicationMonitor)
-        {
-            _context = context;
-        }
+		public PopulateModel(
+			UserManager<User> userManager,
+			AppDbContext context)
+		{
+			this.userManager = userManager;
+			this.context = context;
+		}
 
-        public int RecordsAdded { get; set; }
+		public int RecordsAdded { get; set; }
 
-        public void OnGet()
-        {
-            RecordsAdded = SeedData.PopulateTestData(_context);
-        }
-    }
+		public async Task OnGet()
+		{
+			RecordsAdded = await SeedData.PopulateTestDataAsync(context, userManager);
+		}
+	}
 }

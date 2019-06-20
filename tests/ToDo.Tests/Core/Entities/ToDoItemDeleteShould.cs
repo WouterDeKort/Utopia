@@ -4,17 +4,17 @@ using Xunit;
 
 namespace ToDo.Tests.Core.Entities
 {
-    public class ToDoItemDeleteShould
-    {
-        [Fact]
-        public void RaiseToDoItemCompletedEvent()
-        {
-            var item = new ToDoItemBuilder().Build();
+	public class ToDoItemDeleteShould
+	{
+		[Fact]
+		public void RaiseToDoItemCompletedEvent()
+		{
+			var item = new ToDoItemBuilder().Build();
 
-            item.Delete();
+			item.Delete();
 
-            Assert.Single(item.Events);
-            Assert.IsType<ToDoItemDeletedEvent>(item.Events.First());
-        }
-    }
+			Assert.Single(item.Events);
+			Assert.IsType<ToDoItemDeletedEvent>(item.Events.First());
+		}
+	}
 }

@@ -1,62 +1,62 @@
-﻿using ToDo.Core.Entities;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.Linq;
+using System.Threading.Tasks;
+using ToDo.Core.Entities;
 using ToDo.Core.Interfaces;
 using ToDo.Web.ApiModels;
 using ToDo.Web.Filters;
-using Microsoft.AspNetCore.Mvc;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ToDo.Web.Api
 {
-    [Route("api/[controller]")]
-    [ValidateModel]
-    public class ToDoItemsController : Controller
-    {
-        private readonly IRepository _repository;
+	[Route("api/[controller]")]
+	[ValidateModel]
+	public class ToDoItemsController : Controller
+	{
+		private readonly IRepository _repository;
 
-        public ToDoItemsController(IRepository repository)
-        {
-            _repository = repository;
-        }
+		public ToDoItemsController(IRepository repository)
+		{
+			_repository = repository;
+		}
 
-        // GET: api/ToDoItems
-        [HttpGet]
-        public async Task<IActionResult> ListAsync()
-        {
-            var items = (await _repository.ListAsync<ToDoItem>())
-                            .Select(ToDoItemDTO.FromToDoItem);
-            return Ok(items);
-        }
+		// GET: api/ToDoItems
+		[HttpGet]
+		public async Task<IActionResult> ListAsync()
+		{
+			var items = (await _repository.ListAsync<ToDoItem>())
+							.Select(ToDoItemDTO.FromToDoItem);
+			return Ok(items);
+		}
 
-        // GET: api/ToDoItems
-        [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetByIdAsync(int id)
-        {
-            var item = ToDoItemDTO.FromToDoItem(await _repository.GetByIdAsync<ToDoItem>(id));
-            return Ok(item);
-        }
+		// GET: api/ToDoItems
+		[HttpGet("{id:int}")]
+		public async Task<IActionResult> GetByIdAsync(int id)
+		{
+			var item = ToDoItemDTO.FromToDoItem(await _repository.GetByIdAsync<ToDoItem>(id));
+			return Ok(item);
+		}
 
-        // POST: api/ToDoItems
-        [HttpPost]
-        public async Task<IActionResult> PostAsync([FromBody] ToDoItemDTO item)
-        {
-            var todoItem = new ToDoItem()
-            {
-                Title = item.Title,
-                Description = item.Description
-            };
-            await _repository.AddAsync(todoItem);
-            return Ok(ToDoItemDTO.FromToDoItem(todoItem));
-        }
+		// POST: api/ToDoItems
+		[HttpPost]
+		public async Task<IActionResult> PostAsync([FromBody] ToDoItemDTO item)
+		{
+			var todoItem = new ToDoItem()
+			{
+				Title = item.Title,
+				Description = item.Description
+			};
+			await _repository.AddAsync(todoItem);
+			return Ok(ToDoItemDTO.FromToDoItem(todoItem));
+		}
 
-        [HttpPatch("{id:int}/complete")]
-        public async Task<IActionResult> CompleteAsync(int id)
-        {
-            var toDoItem = await _repository.GetByIdAsync<ToDoItem>(id);
-            toDoItem.MarkComplete();
-            await _repository.UpdateAsync(toDoItem);
+		[HttpPatch("{id:int}/complete")]
+		public async Task<IActionResult> CompleteAsync(int id)
+		{
+			var toDoItem = await _repository.GetByIdAsync<ToDoItem>(id);
+			toDoItem.MarkComplete();
+			await _repository.UpdateAsync(toDoItem);
 
-            return Ok(ToDoItemDTO.FromToDoItem(toDoItem));
-        }
-    }
+			return Ok(ToDoItemDTO.FromToDoItem(toDoItem));
+		}
+	}
 }
