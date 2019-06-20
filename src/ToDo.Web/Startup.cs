@@ -39,7 +39,15 @@ namespace Todo.Web
 			string sendGridApiKey = Configuration["SendGrid:ApiKey"];
 
 			services.AddScoped<IFeatureToggleRepository>(s => new FeatureToggleRepository(launchDarkleyApiKey));
-			services.AddScoped<IApplicationMonitor>(s => new ApplicationMonitor(applicationInsightsApiKey));
+
+			if (applicationInsightsApiKey == null)
+			{
+				services.AddScoped<IApplicationMonitor>(s => new MockApplicationMonitor());
+			}
+			else
+			{
+				services.AddScoped<IApplicationMonitor>(s => new ApplicationMonitor(applicationInsightsApiKey));
+			}
 			services.AddScoped<IRepository, EfRepository>();
 
 			if (Environment.IsDevelopment())

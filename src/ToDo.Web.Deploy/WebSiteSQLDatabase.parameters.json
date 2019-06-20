@@ -1,27 +1,30 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
-  "parameters": {
-    "webAppHostingPlanName": {
-      "value": "Utopia-Test-HostingPlan"
-    },
-    "sqlServerName": {
-      "value": "utopia-test-sqlserver-123"
-    },
-    "sqlServerDatabaseName": {
-      "value": "Utopia-Test-Db"
-    },
-    "webSiteName": {
-      "value": "Utopia-Test-Web-123"
-    },
-    "appInsightsName": {
-      "value": "Utopia-Test-Web-AI"
-    },
-    "sqlServerAdministratorLogin": {
-      "value": "Wouter"
-    },
-    "sqlServerAdministratorLoginPassword": {
-      "value": "DeKort12#$567890"
-    }
-  }
+	"parameters": {
+		"webAppHostingPlanName": {
+			"value": "Utopia-Test-HostingPlan"
+		},
+		"sqlServerName": {
+			"value": "utopia-test-sqlserver-123"
+		},
+		"sqlServerAppDatabaseName": {
+			"value": "Utopia-Test-Db"
+		},
+		"sqlServerIdentityDatabaseName": {
+			"value": "Utopia-Identity-Test-Db"
+		},
+		"webSiteName": {
+			"value": "Utopia-Test-Web-123"
+		},
+		"appInsightsName": {
+			"value": "Utopia-Test-Web-AI"
+		},
+		"sqlServerAdministratorLogin": {
+			"value": "Wouter"
+		},
+		"sqlServerAdministratorLoginPassword": {
+			"value": "DeKort12#$567890"
+		}
+	}
 }

@@ -29,7 +29,6 @@ namespace ToDo.Infrastructure
 				return LaunchDarkly.Client.User.WithKey(user.Email)
 								.AndFirstName(firstName)
 								.AndLastName(lastName);
-
 			}
 		}
 
