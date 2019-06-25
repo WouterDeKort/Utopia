@@ -22,6 +22,7 @@ steps:
   inputs:
     command: restore
     projects: '**/*.csproj'
+    arguments: '--packages $(NUGET_PACKAGES)'
   condition: ne(variables['CacheRestored'], 'true')
 
 - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
@@ -50,7 +51,7 @@ steps:
 - task: DotNetCoreCLI@2
   displayName: Build
   inputs:
-    arguments: '--configuration $(BuildConfiguration)'
+    arguments: '--configuration $(BuildConfiguration) --packages $(NUGET_PACKAGES)'
 
 - task: whitesource.ws-bolt.bolt.wss.WhiteSource Bolt@18
   displayName: 'WhiteSource Bolt'
