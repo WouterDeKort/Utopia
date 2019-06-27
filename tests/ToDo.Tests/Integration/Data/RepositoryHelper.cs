@@ -22,9 +22,9 @@ namespace ToDo.Tests.Integration.Data
 		public static EfRepository GetRepository()
 		{
 			var options = CreateNewContextOptions();
-			var _dbContext = new AppDbContext(options);
+			var dbContext = new AppDbContext(options);
 
-			return new EfRepository(_dbContext);
+			return new EfRepository(dbContext);
 		}
 	}
 }

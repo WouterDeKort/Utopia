@@ -10,7 +10,6 @@ namespace ToDo.Tests.Integration.Data
 {
 	public class EfRepositoryShould
 	{
-		private AppDbContext _dbContext;
 
 		[Fact]
 		public async Task AddItemAndSetId()
@@ -53,7 +52,7 @@ namespace ToDo.Tests.Integration.Data
 			await repository.AddAsync(item);
 
 			// detach the item so we get a different instance
-			_dbContext.Entry(item).State = EntityState.Detached;
+			((EfRepository)repository).DbContext.Entry(item).State = EntityState.Detached;
 
 			// fetch the item and update its title
 			var newItem = (await repository.ListAsync<ToDoItem>())
