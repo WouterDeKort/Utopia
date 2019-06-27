@@ -43,7 +43,7 @@ steps:
    }
   displayName: 'Install Sonar Scanner'
 
-- script: dotnet sonarscanner begin /k:"WouterDeKort_Utopia" /d:sonar.organization="wouterdekort-github" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.login="$(Sonar.Login)" /d:sonar.global.exclusions="wwwroot/lib/**"
+- script: dotnet sonarscanner begin /k:"WouterDeKort_Utopia" /O:"wouterdekort-github" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.login="$(Sonar.Login)" /d:sonar.global.exclusions="wwwroot/lib/**"
   displayName: 'Begin Sonar Scan'
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
