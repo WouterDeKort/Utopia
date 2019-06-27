@@ -43,6 +43,7 @@ steps:
         Write-Host "SonarScanner already installed. Skipping installation."
    }
   displayName: 'Install Sonar Scanner'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
 - script: dotnet sonarscanner begin /k:"$(system.TeamProject)" /d:sonar.host.url="$(Sonar.Url)" /d:sonar.login="$(Sonar.Login)" /d:sonar.global.exclusions="wwwroot/lib/**"
   displayName: 'Begin Sonar Scan'
