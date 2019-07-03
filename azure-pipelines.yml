@@ -45,7 +45,6 @@ steps:
 
 - script: dotnet sonarscanner begin /k:"WouterDeKort_Utopia" /o:"wouterdekort-github" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.login="$(Sonar.Login)" /d:sonar.global.exclusions="wwwroot/lib/**"
   displayName: 'Begin Sonar Scan'
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
 - task: DotNetCoreCLI@2
   displayName: Build
@@ -60,7 +59,6 @@ steps:
 
 - script: dotnet sonarscanner end /d:sonar.login="$(Sonar.Login)"
   displayName: 'End Sonar Scan'
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
      
 - task: DotNetCoreCLI@2
   displayName: 'dotnet publish'
