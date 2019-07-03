@@ -86,6 +86,12 @@ namespace Todo.Web
 				options.User.RequireUniqueEmail = true;
 			});
 
+			services.AddLogging(loggingBuilder => {
+				loggingBuilder.AddConfiguration(Configuration.GetSection("Logging"));
+				loggingBuilder.AddConsole();
+				loggingBuilder.AddDebug();
+			});
+
 			services.AddMvc(options =>
 			{
 				options.Filters.Add<FeatureToggleAsyncPageFilterAttribute>();
@@ -214,12 +220,10 @@ namespace Todo.Web
 			services.AddDbContext<IdentityDbContext>(options =>
 				options.UseSqlServer(Configuration.GetConnectionString("IdentityConnection")));
 		}
-
-		[Obsolete]
+				
 		protected virtual void AddLogging(ILoggerFactory loggerFactory)
 		{
-			loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-			loggerFactory.AddDebug();
+			
 		}
 	}
 }
