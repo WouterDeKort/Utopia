@@ -12,6 +12,7 @@ namespace ToDo.Infrastructure
 
 		public void TrackEvent(string eventName, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null)
 		{
+			// Empty implementation for use in unit tests
 		}
 	}
 }

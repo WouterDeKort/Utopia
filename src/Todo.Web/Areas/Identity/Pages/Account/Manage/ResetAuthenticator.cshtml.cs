@@ -9,9 +9,9 @@ namespace ToDo.Web.Areas.Identity.Pages.Account.Manage
 {
 	public class ResetAuthenticatorModel : PageModel
 	{
-		UserManager<User> _userManager;
-		private readonly SignInManager<User> _signInManager;
-		ILogger<ResetAuthenticatorModel> _logger;
+		readonly UserManager<User> _userManager;
+		readonly SignInManager<User> _signInManager;
+		readonly ILogger<ResetAuthenticatorModel> _logger;
 
 		public ResetAuthenticatorModel(
 			UserManager<User> userManager,

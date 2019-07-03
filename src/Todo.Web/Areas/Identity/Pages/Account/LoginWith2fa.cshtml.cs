@@ -11,14 +11,14 @@ using ToDo.Core.Entities;
 namespace ToDo.Web.Areas.Identity.Pages.Account
 {
 	[AllowAnonymous]
-	public class LoginWith2faModel : PageModel
+	public class LoginWith2FaModel : PageModel
 	{
 		private readonly SignInManager<User> _signInManager;
-		private readonly ILogger<LoginWith2faModel> _logger;
+		private readonly ILogger<LoginWith2FaModel> _logger;
 
-		public LoginWith2faModel(
+		public LoginWith2FaModel(
 			SignInManager<User> signInManager,
-			ILogger<LoginWith2faModel> logger)
+			ILogger<LoginWith2FaModel> logger)
 		{
 			_signInManager = signInManager;
 			_logger = logger;

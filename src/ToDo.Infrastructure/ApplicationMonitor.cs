@@ -7,7 +7,7 @@ namespace ToDo.Infrastructure
 {
 	public class ApplicationMonitor : IApplicationMonitor
 	{
-		private TelemetryClient client;
+		private readonly TelemetryClient client;
 
 		public ApplicationMonitor(string apiKey)
 		{

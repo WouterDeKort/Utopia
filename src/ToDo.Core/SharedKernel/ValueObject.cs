@@ -8,7 +8,12 @@ using System.Reflection;
 namespace ToDo.Core.SharedKernel
 {
 	// source: https://github.com/jhewlett/ValueObject
+#pragma warning disable S4035 // Classes implementing "IEquatable<T>" should be sealed
+		// Equals loops through all properties and compares them for equality
+		// This allows the Equals method to work for all classes that inherit from ValueObject
+		// Because of that the warning S4035 isn't applicable in this scenario
 	public abstract class ValueObject : IEquatable<ValueObject>
+#pragma warning restore S4035 // Classes implementing "IEquatable<T>" should be sealed
 	{
 		private List<PropertyInfo> properties;
 		private List<FieldInfo> fields;
@@ -31,9 +36,9 @@ namespace ToDo.Core.SharedKernel
 			return !(obj1 == obj2);
 		}
 
-		public bool Equals(ValueObject obj)
+		public bool Equals(ValueObject other)
 		{
-			return Equals(obj as object);
+			return Equals(other as object);
 		}
 
 		public override bool Equals(object obj)
@@ -62,9 +67,6 @@ namespace ToDo.Core.SharedKernel
 					.GetProperties(BindingFlags.Instance | BindingFlags.Public)
 					.Where(p => p.GetCustomAttribute(typeof(IgnoreMemberAttribute)) == null)
 					.ToList();
-
-				// Not available in Core
-				// !Attribute.IsDefined(p, typeof(IgnoreMemberAttribute))).ToList();
 			}
 
 			return this.properties;

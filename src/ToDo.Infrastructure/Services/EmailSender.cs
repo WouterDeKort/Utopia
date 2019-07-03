@@ -7,21 +7,21 @@ namespace ToDo.Infrastructure.Services
 {
 	public class EmailSender : IEmailSender
 	{
-		private string apiKey;
+		private readonly string apiKey;
 
 		public EmailSender(string apiKey)
 		{
 			this.apiKey = apiKey;
 		}
 
-		public async Task SendEmailAsync(string email, string subject, string message)
+		public async Task SendEmailAsync(string email, string subject, string htmlMessage)
 		{
 			var client = new SendGridClient(apiKey);
 
 			var from = new EmailAddress("utopia@example.com", "Utopia");
 			var to = new EmailAddress(email);
 
-			var msg = MailHelper.CreateSingleEmail(from, to, subject, message, message);
+			var msg = MailHelper.CreateSingleEmail(from, to, subject, htmlMessage, htmlMessage);
 			msg.SetClickTracking(false, false);
 
 			await client.SendEmailAsync(msg);

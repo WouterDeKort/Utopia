@@ -23,7 +23,7 @@ namespace ToDo.Tests.Integration.Web
 
 			builder.UseContentRoot(location + @"\src\ToDo.Web");
 
-			builder.ConfigureTestServices(services =>
+			builder.ConfigureServices(services =>
 			{
 				UseInMemoryDatabase(services);
 				AddTestData(services);
@@ -38,7 +38,6 @@ namespace ToDo.Tests.Integration.Web
 			{
 				var scopedServices = scope.ServiceProvider;
 				var db = scopedServices.GetRequiredService<AppDbContext>();
-				var identityDb = scopedServices.GetRequiredService<Infrastructure.Identity.IdentityDbContext>();
 				var logger = scopedServices
 					.GetRequiredService<ILogger<CustomWebApplicationFactory>>();
 

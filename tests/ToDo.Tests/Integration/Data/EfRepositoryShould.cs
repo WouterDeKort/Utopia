@@ -52,7 +52,7 @@ namespace ToDo.Tests.Integration.Data
 			await repository.AddAsync(item);
 
 			// detach the item so we get a different instance
-			((EfRepository)repository).DbContext.Entry(item).State = EntityState.Detached;
+			repository.DbContext.Entry(item).State = EntityState.Detached;
 
 			// fetch the item and update its title
 			var newItem = (await repository.ListAsync<ToDoItem>())

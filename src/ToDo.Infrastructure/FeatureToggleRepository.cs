@@ -6,7 +6,7 @@ namespace ToDo.Infrastructure
 {
 	public class FeatureToggleRepository : IFeatureToggleRepository
 	{
-		private LdClient client;
+		private readonly LdClient client;
 
 		public FeatureToggleRepository(string launchDarkleyApiKey)
 		{

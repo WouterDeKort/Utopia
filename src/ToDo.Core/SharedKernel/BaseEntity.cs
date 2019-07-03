@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ToDo.Core.SharedKernel
 {
@@ -7,6 +8,6 @@ namespace ToDo.Core.SharedKernel
 	{
 		public int Id { get; set; }
 
-		public List<BaseDomainEvent> Events = new List<BaseDomainEvent>();
+		public List<BaseDomainEvent> Events { get; } = new List<BaseDomainEvent>();
 	}
 }

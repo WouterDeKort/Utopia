@@ -24,7 +24,7 @@ namespace ToDo.Web.Api
 		public async Task<IActionResult> ListAsync()
 		{
 			var items = (await _repository.ListAsync<ToDoItem>())
-							.Select(ToDoItemDTO.FromToDoItem);
+							.Select(ToDoItemDto.FromToDoItem);
 			return Ok(items);
 		}
 
@@ -32,13 +32,13 @@ namespace ToDo.Web.Api
 		[HttpGet("{id:int}")]
 		public async Task<IActionResult> GetByIdAsync(int id)
 		{
-			var item = ToDoItemDTO.FromToDoItem(await _repository.GetByIdAsync<ToDoItem>(id));
+			var item = ToDoItemDto.FromToDoItem(await _repository.GetByIdAsync<ToDoItem>(id));
 			return Ok(item);
 		}
 
 		// POST: api/ToDoItems
 		[HttpPost]
-		public async Task<IActionResult> PostAsync([FromBody] ToDoItemDTO item)
+		public async Task<IActionResult> PostAsync([FromBody] ToDoItemDto item)
 		{
 			var todoItem = new ToDoItem()
 			{
@@ -46,7 +46,7 @@ namespace ToDo.Web.Api
 				Description = item.Description
 			};
 			await _repository.AddAsync(todoItem);
-			return Ok(ToDoItemDTO.FromToDoItem(todoItem));
+			return Ok(ToDoItemDto.FromToDoItem(todoItem));
 		}
 
 		[HttpPatch("{id:int}/complete")]
@@ -56,7 +56,7 @@ namespace ToDo.Web.Api
 			toDoItem.MarkComplete();
 			await _repository.UpdateAsync(toDoItem);
 
-			return Ok(ToDoItemDTO.FromToDoItem(toDoItem));
+			return Ok(ToDoItemDto.FromToDoItem(toDoItem));
 		}
 	}
 }
