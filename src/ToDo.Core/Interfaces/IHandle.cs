@@ -2,7 +2,7 @@
 
 namespace ToDo.Core.Interfaces
 {
-	public interface IHandle<T> where T : BaseDomainEvent
+	public interface IHandle<in T> where T : BaseDomainEvent
 	{
 		void Handle(T domainEvent);
 	}

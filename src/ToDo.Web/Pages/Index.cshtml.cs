@@ -11,10 +11,9 @@ namespace ToDo.Web.Pages.ToDoRazorPage
 {
 	public class IndexModel : PageModel
 	{
-		private UserManager<User> _userManager;
-		private IRepository _repository;
-		private IFeatureToggleRepository _featureToggleRepository;
-		private IApplicationMonitor _applicationMonitor;
+		private readonly UserManager<User> _userManager;
+		private readonly IRepository _repository;
+		private readonly IApplicationMonitor _applicationMonitor;
 
 		public List<ToDoItem> ToDoItems { get; set; }
 		public int NumberOfPages { get; set; }
@@ -28,12 +27,10 @@ namespace ToDo.Web.Pages.ToDoRazorPage
 		public IndexModel(
 			UserManager<User> userManager,
 			IRepository repository,
-			IFeatureToggleRepository featureToggleRepository,
 			IApplicationMonitor applicationMonitor)
 		{
 			_userManager = userManager;
 			_repository = repository;
-			_featureToggleRepository = featureToggleRepository;
 			_applicationMonitor = applicationMonitor;
 		}
 

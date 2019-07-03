@@ -3,7 +3,7 @@ using ToDo.Core.Entities;
 
 namespace ToDo.Web.ApiModels
 {
-	public class ToDoItemDTO
+	public class ToDoItemDto
 	{
 		public int Id { get; set; }
 		[Required]
@@ -11,9 +11,9 @@ namespace ToDo.Web.ApiModels
 		public string Description { get; set; }
 		public bool IsDone { get; private set; }
 
-		public static ToDoItemDTO FromToDoItem(ToDoItem item)
+		public static ToDoItemDto FromToDoItem(ToDoItem item)
 		{
-			return new ToDoItemDTO()
+			return new ToDoItemDto()
 			{
 				Id = item.Id,
 				Title = item.Title,

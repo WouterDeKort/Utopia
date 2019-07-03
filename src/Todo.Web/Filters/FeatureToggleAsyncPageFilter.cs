@@ -7,12 +7,12 @@ using ToDo.Core.Interfaces;
 
 namespace ToDo.Web.Filters
 {
-	public class FeatureToggleAsyncPageFilter : ResultFilterAttribute
+	public class FeatureToggleAsyncPageFilterAttribute : ResultFilterAttribute
 	{
 		private readonly UserManager<User> _userManager;
 		private readonly IFeatureToggleRepository _featureToggleRepository;
 
-		public FeatureToggleAsyncPageFilter(IFeatureToggleRepository featureToggleRepository, UserManager<User> userManager)
+		public FeatureToggleAsyncPageFilterAttribute(IFeatureToggleRepository featureToggleRepository, UserManager<User> userManager)
 		{
 			_userManager = userManager;
 			_featureToggleRepository = featureToggleRepository;

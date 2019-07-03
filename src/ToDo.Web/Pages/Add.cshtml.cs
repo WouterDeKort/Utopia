@@ -11,9 +11,9 @@ namespace ToDo.Web.Pages
 
 	public class AddModel : PageModel
 	{
-		private UserManager<User> _userManager;
-		private IRepository _repository;
-		private IApplicationMonitor _applicationMonitor;
+		private readonly UserManager<User> _userManager;
+		private readonly IRepository _repository;
+		private readonly IApplicationMonitor _applicationMonitor;
 
 		public AddModel(
 			UserManager<User> userManager,

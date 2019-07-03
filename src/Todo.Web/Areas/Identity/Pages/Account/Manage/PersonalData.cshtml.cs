@@ -10,14 +10,10 @@ namespace ToDo.Web.Areas.Identity.Pages.Account.Manage
 	public class PersonalDataModel : PageModel
 	{
 		private readonly UserManager<User> _userManager;
-		private readonly ILogger<PersonalDataModel> _logger;
 
-		public PersonalDataModel(
-			UserManager<User> userManager,
-			ILogger<PersonalDataModel> logger)
+		public PersonalDataModel(UserManager<User> userManager)
 		{
 			_userManager = userManager;
-			_logger = logger;
 		}
 
 		public async Task<IActionResult> OnGet()

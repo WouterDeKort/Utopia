@@ -26,27 +26,25 @@ namespace ToDo.Web.Middleware
 		public async Task Invoke(HttpContext context)
 		{
 			if (context.Request.Headers.Keys.Contains(TestingHeader) &&
-				context.Request.Headers[TestingHeader].First().Equals(TestingHeaderValue))
+				context.Request.Headers[TestingHeader].First().Equals(TestingHeaderValue) && 
+				context.Request.Headers.Keys.Contains("my-name"))
 			{
-				if (context.Request.Headers.Keys.Contains("my-name"))
-				{
-					var name =
-						context.Request.Headers["my-name"].First();
-					var id =
-						context.Request.Headers.Keys.Contains("my-id")
-							? context.Request.Headers["my-id"].First() : "";
+				var name =
+					context.Request.Headers["my-name"].First();
+				var id =
+					context.Request.Headers.Keys.Contains("my-id")
+						? context.Request.Headers["my-id"].First() : "";
 
-					ClaimsIdentity claimsIdentity = new ClaimsIdentity(
-						new List<Claim>
-							{
+				ClaimsIdentity claimsIdentity = new ClaimsIdentity(
+					new List<Claim>
+						{
 								new Claim(ClaimTypes.Name, name),
 								new Claim(ClaimTypes.NameIdentifier, id),
-							},
-						TestingCookieAuthentication);
+						},
+					TestingCookieAuthentication);
 
-					ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-					context.User = claimsPrincipal;
-				}
+				ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+				context.User = claimsPrincipal;
 			}
 
 			await _next(context);

@@ -88,7 +88,7 @@ namespace Todo.Web
 
 			services.AddMvc(options =>
 			{
-				options.Filters.Add<FeatureToggleAsyncPageFilter>();
+				options.Filters.Add<FeatureToggleAsyncPageFilterAttribute>();
 			})
 				.AddControllersAsServices()
 				.AddSessionStateTempDataProvider()
