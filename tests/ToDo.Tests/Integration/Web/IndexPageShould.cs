@@ -13,13 +13,11 @@ namespace ToDo.Tests.Integration.Web
 {
 	public class IndexPageShould : IClassFixture<CustomWebApplicationFactory>
 	{
-		private readonly UserManager<User> _userManager;
 		private readonly HttpClient _client;
 
 		public IndexPageShould(CustomWebApplicationFactory factory)
 		{
 			_client = factory.CreateClient();
-			_userManager = factory.Server.Host.Services.GetRequiredService<UserManager<User>>();
 		}
 
 		[Fact]
@@ -36,8 +34,7 @@ namespace ToDo.Tests.Integration.Web
 		[Fact(Skip ="Can't get this to work. Skipping for now")]
 		public async Task NavigateToDetailsPage()
 		{
-			
-			var dummyUser = await _userManager.FindByEmailAsync("wouter@utopia.com");
+			User dummyUser = null;
 
 			_client.DefaultRequestHeaders.Add(AuthenticatedTestRequestMiddleware.TestingHeader, AuthenticatedTestRequestMiddleware.TestingHeaderValue);
 			_client.DefaultRequestHeaders.Add("my-name", dummyUser.Email);
