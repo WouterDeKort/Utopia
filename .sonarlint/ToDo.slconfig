@@ -1,0 +1,15 @@
+{
+  "ServerUri": "https://sonarcloud.io/",
+  "Organization": {
+    "Key": "wouterdekort-github",
+    "Name": "Wouter de Kort"
+  },
+  "ProjectKey": "WouterDeKort_Utopia",
+  "ProjectName": "Utopia",
+  "Profiles": {
+    "CSharp": {
+      "ProfileKey": "AWuYvyiYCd-RbPVppyPj",
+      "ProfileTimestamp": "2019-05-07T17:01:40+02:00"
+    }
+  }
+}

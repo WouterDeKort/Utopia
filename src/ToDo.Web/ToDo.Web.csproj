@@ -8,6 +8,14 @@
     <ApplicationInsightsAnnotationResourceId>/subscriptions/a4034749-dd05-41f7-8614-da3c4edf8535/resourcegroups/TestDeploymentUtopia/providers/microsoft.insights/components/Utopia-Test-Web-AI</ApplicationInsightsAnnotationResourceId>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <CodeAnalysisRuleSet>ToDo.Web.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <CodeAnalysisRuleSet>ToDo.Web.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.5.1" />
     <PackageReference Include="Microsoft.ApplicationInsights.Web" Version="2.2.0" />

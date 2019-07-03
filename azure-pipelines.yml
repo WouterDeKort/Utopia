@@ -10,26 +10,11 @@ steps:
   inputs:
     version: 2.1.500
 
-- task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
-  displayName: 'Restore artifact based on: **/*.csproj, salt.txt'
-  inputs:
-    keyfile: $(keyfile)
-    targetfolder: $(NUGET_PACKAGES)
-    vstsFeed: $(azureDevOpsArtifactsFeed)
-
 - task: DotNetCoreCLI@2
   displayName: 'dotnet restore'
   inputs:
     command: restore
     projects: '**/*.csproj'
-  condition: ne(variables['CacheRestored'], 'true')
-
-- task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
-  displayName: 'Save artifact based on: **/*.csproj, salt.txt'
-  inputs:
-    keyfile: $(keyfile)
-    targetfolder: $(NUGET_PACKAGES)
-    vstsFeed: $(azureDevOpsArtifactsFeed)
 
 - powershell: |
    $installedTools = dotnet tool list --global
