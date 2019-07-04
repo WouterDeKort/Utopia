@@ -4,42 +4,40 @@
 
 
 @{
-    var item = @Model.ToDoItem;
+	var item = @Model.ToDoItem;
 
-    <div class="row">
-        <div class="col-md-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <strong>
-                        @item.Title
-                    </strong>
-                    @if (item.Hours.HasValue)
-                    {
-                        <span class="pull-right">
-                            <small>
-                                @item.Hours hours remaining
-                            </small>
-                        </span>
-                    }
-                </div>
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-xs-6 col-md-10">
-                            @item.Description
-                            <hr />
-                            <strong>Due before:</strong> @item.DueDate.ToString("dd-MM-yyyy")
-                        </div>
-                        <div class="col-xs-6 col-md-2">
-                            <div class="thumbnail">
-                                <img src="@item.Avatar" alt="@item.Owner" width="180" height="180">
-                                <center>
-                                    <h4>@item.Owner</h4>
-                                </center>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+	<div class="row">
+		<div class="col-md-12">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<strong>
+						@item.Title
+					</strong>
+					@if (item.Hours.HasValue)
+					{
+						<span class="pull-right">
+							<small>
+								@item.Hours hours remaining
+							</small>
+						</span>
+					}
+				</div>
+				<div class="panel-body">
+					<div class="row">
+						<div class="col-xs-6 col-md-10">
+							@item.Description
+							<hr />
+							<strong>Due before:</strong> @item.DueDate.ToString("dd-MM-yyyy")
+						</div>
+						<div class="col-xs-6 col-md-2">
+							<div class="thumbnail">
+								<img src="@item.Avatar" alt="@item.Owner" width="180" height="180">
+								<h4 class="center">@item.Owner</h4>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 }
