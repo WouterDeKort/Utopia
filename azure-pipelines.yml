@@ -36,6 +36,12 @@ steps:
   inputs:
     arguments: '--configuration $(BuildConfiguration)'
 
+- task: DotNetCoreCLI@2
+  inputs:
+    command: test
+    projects: '**/*Tests/*.csproj'
+    arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
+    
 - task: whitesource.ws-bolt.bolt.wss.WhiteSource Bolt@18
   displayName: 'WhiteSource Bolt'
   inputs:
@@ -53,12 +59,6 @@ steps:
     publishWebProjects: True
     arguments: '--configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory)'
     zipAfterPublish: false
-
-- task: PublishTestResults@2
-  displayName: 'Publish test results'
-  inputs:
-    testRunner: VSTest
-    testResultsFiles: '**/*.trx'
 
 - task: PublishPipelineArtifact@1
   displayName: 'Publish Pipeline Artifact'
