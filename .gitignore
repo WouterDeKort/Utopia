@@ -249,3 +249,5 @@ paket-files/
 .idea/
 *.sln.iml
 /.sonarqube
+**/coverage.opencover.xml
+localbuild.ps1

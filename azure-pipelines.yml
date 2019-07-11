@@ -1,8 +1,5 @@
 variables:
-  buildConfiguration: 'Release'
-  NUGET_PACKAGES: $(Build.SourcesDirectory)/packages
-  keyfile: '**/*.csproj, salt.txt'
-  azureDevOpsArtifactsFeed: 'c013416d-862f-4a53-b537-3724f44e435c'
+  buildConfiguration: 'Release'  
 
 steps:
 - task: DotNetCoreInstaller@0
@@ -28,7 +25,7 @@ steps:
    }
   displayName: 'Install Sonar Scanner'
 
-- script: dotnet sonarscanner begin /k:"WouterDeKort_Utopia" /o:"wouterdekort-github" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.login="$(Sonar.Login)" /d:sonar.global.exclusions="wwwroot/lib/**" /d:sonar.branch.name="$(Build.SourceBranchName)"
+- script: dotnet sonarscanner begin /k:"WouterDeKort_Utopia" /o:"wouterdekort-github" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.login="$(Sonar.Login)" /d:sonar.global.exclusions="wwwroot/lib/**" /d:sonar.branch.name="$(Build.SourceBranchName) /d:sonar.cs.opencover.reportsPaths="tests\ToDo.Tests\coverage.opencover.xml" /d:sonar.coverage.exclusions="**Tests*.cs""
   displayName: 'Begin Sonar Scan'
 
 - task: DotNetCoreCLI@2
@@ -40,7 +37,7 @@ steps:
   inputs:
     command: test
     projects: '**/*Tests/*.csproj'
-    arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
+    arguments: '--configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
     
 - task: whitesource.ws-bolt.bolt.wss.WhiteSource Bolt@18
   displayName: 'WhiteSource Bolt'
