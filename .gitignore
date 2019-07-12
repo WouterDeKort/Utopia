@@ -251,3 +251,4 @@ paket-files/
 /.sonarqube
 **/coverage.opencover.xml
 localbuild.ps1
+tests/codecoveragereport/*
