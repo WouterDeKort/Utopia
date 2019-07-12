@@ -19,7 +19,7 @@ steps:
    }
    if ( ![bool]($installedTools -match "dotnet-reportgenerator-globaltool"))
    {
-       dotnet tool install dotnet-reportgenerator-globaltool --tool-path . --version 4.0.0-rc4
+       dotnet tool install --global dotnet-reportgenerator-globaltool --version 4.0.0-rc4
    }
    else
    {
