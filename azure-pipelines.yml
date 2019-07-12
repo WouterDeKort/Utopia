@@ -7,12 +7,6 @@ steps:
   inputs:
     version: 2.1.500
 
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet restore'
-  inputs:
-    command: restore
-    projects: '**/*.csproj'
-
 - powershell: |
    $installedTools = dotnet tool list --global
    if ( ![bool]($installedTools -match "dotnet-sonarscanner"))
@@ -23,39 +17,30 @@ steps:
    {
         Write-Host "SonarScanner already installed. Skipping installation."
    }
-  displayName: 'Install Sonar Scanner'
+   if ( ![bool]($installedTools -match "dotnet-reportgenerator-globaltool"))
+   {
+       dotnet tool install dotnet-reportgenerator-globaltool --tool-path . --version 4.0.0-rc4
+   }
+   else
+   {
+        Write-Host "ReportGenerator already installed. Skipping installation."
+   }
+  displayName: 'Install Sonar Scanner and ReportGenerator'
 
-- script: dotnet sonarscanner begin /k:"WouterDeKort_Utopia" /o:"wouterdekort-github" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.login="$(Sonar.Login)" /d:sonar.global.exclusions="wwwroot/lib/**" /d:sonar.branch.name="$(Build.SourceBranchName)" /d:sonar.cs.opencover.reportsPaths="tests\ToDo.Tests\coverage.opencover.xml" /d:sonar.coverage.exclusions="**Tests*.cs""
-  displayName: 'Begin Sonar Scan'
+- script: |
+    dotnet restore
+    dotnet sonarscanner begin /k:"WouterDeKort_Utopia" /o:"wouterdekort-github" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.login="$(Sonar.Login)" /d:sonar.global.exclusions="wwwroot/lib/**" /d:sonar.branch.name="$(Build.SourceBranchName)" /d:sonar.cs.opencover.reportsPaths="tests\ToDo.Tests\coverage.opencover.xml" /d:sonar.coverage.exclusions="**Tests*.cs""
+    dotnet build --configuration $(BuildConfiguration)
+    dotnet test **/*Tests/*.csproj --configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+    dotnet sonarscanner end /d:sonar.login="$(Sonar.Login)"
+    dotnet publish src\ToDo.Web\ToDo.Web.csproj --configuration $(BuildConfiguration) --output ToDo.Web
+  displayName: 'Build and test'
 
-- task: DotNetCoreCLI@2
-  displayName: Build
-  inputs:
-    arguments: '--configuration $(BuildConfiguration)'
-
-- task: DotNetCoreCLI@2
-  inputs:
-    command: test
-    projects: '**/*Tests/*.csproj'
-    arguments: '--configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
-    
 - task: whitesource.ws-bolt.bolt.wss.WhiteSource Bolt@18
   displayName: 'WhiteSource Bolt'
   inputs:
     cwd: src
     advance: true
-
-- script: dotnet sonarscanner end /d:sonar.login="$(Sonar.Login)"
-  displayName: 'End Sonar Scan'
-     
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet publish'
-  inputs:
-    command: 'publish'
-    projects: 'src/Todo.Web/ToDo.Web.csproj'
-    publishWebProjects: True
-    arguments: '--configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory)'
-    zipAfterPublish: false
 
 - task: PublishPipelineArtifact@1
   displayName: 'Publish Pipeline Artifact'
