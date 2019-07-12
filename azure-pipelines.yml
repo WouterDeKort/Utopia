@@ -29,12 +29,12 @@ steps:
 
 - script: |
     dotnet restore
+    dotnet test --configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
     dotnet sonarscanner begin /k:"WouterDeKort_Utopia" /o:"wouterdekort-github" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.login="$(Sonar.Login)" /d:sonar.global.exclusions="wwwroot/lib/**" /d:sonar.branch.name="$(Build.SourceBranchName)" /d:sonar.cs.opencover.reportsPaths="tests\ToDo.Tests\coverage.opencover.xml" /d:sonar.coverage.exclusions="**Tests*.cs""
     dotnet build --configuration $(BuildConfiguration)
-    dotnet test --configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
     dotnet sonarscanner end /d:sonar.login="$(Sonar.Login)"
     dotnet publish src\ToDo.Web\ToDo.Web.csproj --configuration $(BuildConfiguration) --output ToDo.Web
-    reportgenerator "-reports:$(Build.SourcesDirectory)\tests\ToDo.Tests\coverage.opencover.xml" "-targetdir:tests\codecoveragereport" "-reporttypes:HTMLInline;HTMLChart"
+    reportgenerator "-reports:$(Build.SourcesDirectory)\tests\ToDo.Tests\coverage.opencover.xml" "-targetdir:tests\codecoveragereport" "-reporttypes:Cobertura;HTMLInline;HTMLChart"
   displayName: 'Build and test'
 
 - task: whitesource.ws-bolt.bolt.wss.WhiteSource Bolt@18
@@ -50,9 +50,9 @@ steps:
 
 - task: PublishCodeCoverageResults@1
   inputs:
-    summaryFileLocation: $(Build.SourcesDirectory)\tests\ToDo.Tests\coverage.opencover.xml
+    summaryFileLocation: $(Build.SourcesDirectory)\tests\codecoveragereport\Cobertura.xml
     reportDirectory: $(Build.SourcesDirectory)\tests\codecoveragereport
-    codecoverageTool: opencover
+    codecoverageTool: Cobertura
 
 - task: PublishPipelineArtifact@1
   displayName: 'Publish Pipeline Artifact'
