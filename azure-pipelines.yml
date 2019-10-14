@@ -9,7 +9,7 @@ steps:
   displayName: 'Use .NET Core sdk 2.2.401'
   inputs:
     packageType: 'sdk'
-    version: '2.2'
+    version: '2.2.401'
 
 - powershell: |
    $installedTools = dotnet tool list --global
