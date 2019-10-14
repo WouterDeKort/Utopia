@@ -1,3 +1,6 @@
+pool:
+ name: 'windows-latest'
+
 variables:
   buildConfiguration: 'Release'  
 
