@@ -2,20 +2,21 @@ pool:
  vmImage: 'windows-latest'
 
 variables:
-  buildConfiguration: 'Release'  
+  buildConfiguration: 'Release'
 
 steps:
-- task: DotNetCoreInstaller@0
-  displayName: 'Use .NET Core sdk 2.2.401'
+- task: UseDotNet@2
+  displayName: 'Use .NET Core SDK'
   inputs:
-    packageType: 'sdk'
+    packageType: sdk
     version: '2.2.401'
+    installationPath: $(Agent.ToolsDirectory)/dotnet
 
 - powershell: |
    $installedTools = dotnet tool list --global
    if ( ![bool]($installedTools -match "dotnet-sonarscanner"))
    {
-        dotnet tool install --global dotnet-sonarscanner 
+        dotnet tool install --global dotnet-sonarscanner
    }
    else
    {
